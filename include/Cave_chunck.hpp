@@ -29,7 +29,6 @@ public:
   Cave_chunck() = default;
   Cave_chunck(const std::vector<Vect<int, 2u>> &entry_points);
   explicit Cave_chunck(const Cave_chunck &entry_points);
-  ~Cave_chunck();
   const Vect<int, 2u> get_pos() const;
   Cave_tile const &get_tile(unsigned int x, unsigned int y) const;
   void print() const;

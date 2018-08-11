@@ -25,6 +25,8 @@ namespace logic
 
     void update(Logic &);
     void jump() noexcept;
+    void drift(int dir) noexcept;
+    void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
     disp::TextureList const & getTexture() const;
     Vect<FixedPoint<-8>, 2u> const & getPosition() const;
