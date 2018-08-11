@@ -31,7 +31,7 @@ namespace disp
   void Display::render(logic::Logic const &logic)
   {
     window.clear();
-    camera.offset = (Vect<double, 2u>(static_cast<double>(window.getSize().x), static_cast<double>(window.getSize().y)) / 2) - Vect<float, 2u>::fromFixedPoint<-8>(logic.getPlayerPosition());
+    camera.offset = (Vect<double, 2u>(static_cast<double>(window.getSize().x), static_cast<double>(window.getSize().y)) / 2) - Vect<float, 2u>::fromFixedPoint<-8>(logic.getCameraPosition());
     for (logic::Entity const & entity : logic.getEntities())
       {
 	sf::Sprite sprite(textures[entity.getTexture()]);
