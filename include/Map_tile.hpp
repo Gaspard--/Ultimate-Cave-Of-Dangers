@@ -1,25 +1,25 @@
 #pragma once
 
 enum class TileType : char
-{
-	None = 0,
-	Wall,
-	Entry,
-	Platform
-};
+  {
+    Wall,
+    Empty,
+    Entry,
+    Platform
+  };
 
 // various props
 enum class DecorationType : char
-{
-	None = 0
-};
+  {
+    None = 0
+  };
 
-class CaveTile {
+class Tile {
 public:
   TileType type;
   DecorationType decoration;
 
-  CaveTile(TileType type = TileType::Wall,
-	   DecorationType decoration = DecorationType::None);
+  Tile(TileType type = TileType::Wall,
+       DecorationType decoration = DecorationType::None);
 
 };
