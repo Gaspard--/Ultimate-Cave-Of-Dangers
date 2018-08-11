@@ -228,4 +228,13 @@ public:
       i = i + 1;
     return (i == dim);
   }
+
+  constexpr bool any() const
+  {
+    unsigned int i(0);
+
+    while (i != dim && !data[i])
+      i = i + 1;
+    return (i != dim);
+  }
 };
