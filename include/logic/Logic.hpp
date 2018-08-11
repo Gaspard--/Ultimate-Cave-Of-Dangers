@@ -5,6 +5,8 @@
 
 #include "logic/Entity.hpp"
 
+#include "Cave_map.hpp"
+
 #include <SFML/Graphics.hpp>
 
 namespace logic
@@ -29,6 +31,7 @@ namespace logic
     std::vector<Entity> entities;
 
     std::variant<Playing, Pause, GameOver> state;
+    Cave_map caveMap;
   public:
     Logic();
 
