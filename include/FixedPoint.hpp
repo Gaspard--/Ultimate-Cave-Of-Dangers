@@ -4,7 +4,16 @@ template<int exponent>
 class FixedPoint
 {
   using StoreType = int;
-  using UnsignedType = unsigned int;
+
+  template<int shift>
+  static StoreType logicalLShift(StoreType val)
+  {
+    if constexpr (shift < 0)
+      return static_cast<unsigned int>(val) >> -shift;
+    else
+      return static_cast<unsigned int>(val) << shift;
+  }
+  
 public:
   StoreType value;
 
@@ -20,7 +29,7 @@ public:
 
   template<int otherExponent>
   explicit constexpr FixedPoint(FixedPoint<otherExponent> other) noexcept
-  : value(UnsignedType(other.value) << (otherExponent - exponent))
+  : value(logicalLShift<otherExponent - exponent>(other.value))
   {
     static_assert(otherExponent - exponent < 16 && exponent - otherExponent < 16); // sanity to not lose to much precision
   }
@@ -77,6 +86,6 @@ public:
   
   constexpr float getFloatValue() const noexcept
   {
-    return float(StoreType(UnsignedType(value) << exponent));
+    return float(logicalLShift<exponent>(value));
   }
 };
