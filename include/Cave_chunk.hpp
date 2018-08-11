@@ -10,28 +10,39 @@
 #include "Map_tile.hpp"
 #include "Vect.hpp"
 
-enum class exit_direction : char
-{
-	Ouest = 0,
-	Nord,
-	Est,
-	South // shouldn't be possible
-};
+enum class ExitDirection : unsigned char
+  {
+    Left = 0,
+    Up,
+    Right,
+  };
 
-class Cave_chunk
+class CaveChunk
 {
 private:
-  std::array<std::array<Cave_tile, CHUNK_SIZE>, CHUNK_SIZE> chunk;
-  std::vector<Vect<unsigned int, 2u>> entry_points;
+  std::array<std::array<CaveTile, CHUNK_SIZE>, CHUNK_SIZE> tiles;
   Vect<unsigned int, 2> pos;
+  ExitDirection exitDir;
 
 public:
-  Cave_chunk() = default;
-  Cave_chunk(const std::vector<Vect<int, 2u>> &entry_points);
+  CaveChunk() = default;
 
-  void init(const Cave_chunk &entry_points);
-  const Vect<unsigned int, 2u> &get_pos() const;
-  Cave_tile const &get_tile(unsigned int x, unsigned int y) const;
-  Cave_tile &get_tile(unsigned int x, unsigned int y);
+  void init(const CaveChunk &previous) noexcept;
+
+  const Vect<unsigned int, 2u> &getPos() const noexcept
+  {
+    return pos;
+  }
+
+  CaveTile const &getTile(unsigned int x, unsigned int y) const noexcept
+  {
+    return tiles[y][x];
+  }
+
+  CaveTile &getTile(unsigned int x, unsigned int y) noexcept
+  {
+    return tiles[y][x];
+  }
+
   void print() const;
 };

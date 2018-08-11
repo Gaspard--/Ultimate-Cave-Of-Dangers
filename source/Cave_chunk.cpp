@@ -2,49 +2,29 @@
 
 #include "Cave_chunk.hpp"
 
-void Cave_chunk::init(Cave_chunk const &parent)
+void CaveChunk::init(CaveChunk const &previous) noexcept
 {
-  unsigned int nb_room = 0;
-
-  for (auto &pos : parent.entry_points)
-    {
-      chunk[pos[0]][pos[1]].type = tile_type::Entry;
-    }
+  
 }
 
-const Vect<unsigned int, 2u> &Cave_chunk::get_pos() const
+void CaveChunk::print() const
 {
-  return pos;
-}
-
-Cave_tile const &Cave_chunk::get_tile(unsigned int x, unsigned int y) const
-{
-  return chunk[y][x];
-}
-
-Cave_tile &Cave_chunk::get_tile(unsigned int x, unsigned int y)
-{
-  return chunk[y][x];
-}
-
-void Cave_chunk::print() const
-{
-  for (auto &line : chunk)
+  for (auto &line : tiles)
     {
       for (auto &tile : line)
 	{
 	  switch (tile.type)
 	    {
-	    case tile_type::None:
+	    case TileType::None:
 	      std::cout << ' ';
 	      break;
-	    case tile_type::Wall:
+	    case TileType::Wall:
 	      std::cout << 'W';
 	      break;
-	    case tile_type::Entry:
+	    case TileType::Entry:
 	      std::cout << 'E';
 	      break;
-	    case tile_type::Platform:
+	    case TileType::Platform:
 	      std::cout << '_';
 	      break;
 	    default:

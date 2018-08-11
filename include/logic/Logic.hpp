@@ -32,7 +32,7 @@ namespace logic
     Vect<FixedPoint<-8>, 2u> cameraPosition;
 
     std::variant<Playing, Pause, GameOver> state;
-    Cave_map caveMap;
+    CaveMap caveMap;
   public:
     Logic();
 

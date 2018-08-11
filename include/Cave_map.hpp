@@ -5,20 +5,20 @@
 
 #include "Cave_chunk.hpp"
 
-class Cave_map
+class CaveMap
 {
 private:
-  std::array<Cave_chunk, 10> chunks;
+  std::array<CaveChunk, 10> chunks;
   size_t firstChunk;
-  Cave_tile outOfBounds;
+  CaveTile outOfBounds;
 
 public:
-  Cave_map();
+  CaveMap();
   void genNextChunk();
 
-  Cave_chunk &getChunk(size_t index) noexcept;
-  Cave_chunk const &getChunk(size_t index) const noexcept;
+  CaveChunk &getChunk(size_t index) noexcept;
+  CaveChunk const &getChunk(size_t index) const noexcept;
 
-  Cave_tile &getTile(Vect<unsigned int, 2> position) noexcept;
-  Cave_tile const &getTile(Vect<unsigned int, 2> position) const noexcept;
+  CaveTile &getTile(Vect<unsigned int, 2> position) noexcept;
+  CaveTile const &getTile(Vect<unsigned int, 2> position) const noexcept;
 };

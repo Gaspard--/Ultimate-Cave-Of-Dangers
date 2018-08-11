@@ -1,8 +1,8 @@
 #include "Map_tile.hpp"
 
-Cave_tile::Cave_tile (tile_type type,
-		      decoration_type decoration)
+CaveTile::CaveTile(TileType type,
+		   DecorationType decoration)
+  : type(type)
+  , decoration(decoration)
 {
-  this->type = type;
-  this->decoration = decoration;
 }
