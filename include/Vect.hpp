@@ -6,7 +6,7 @@
 #include <cstddef>
 
 // taken from raven-os/claws, will reintegrate major improvements
-template<std::size_t dim, class T>
+template<class T, std::size_t dim>
 class Vect
 {
 private:
@@ -22,15 +22,15 @@ private:
     : Vect(((void)indices, T{})...)
   {}
 
-  template<class func, std::size_t... indices>
-  static auto apply_op(func &&func, std::index_sequence<indices...>)
+  template<class func_type, std::size_t... indices>
+  static auto apply_op(func_type &&func, std::index_sequence<indices...>)
   {
     return Vect{func(indices)...};
   }
 
 public:
-  template<class func>
-  static Vect<dim, T> apply_op(func &&func)
+  template<class func_type>
+  static Vect<T, dim> apply_op(func_type &&func)
   {
     return apply_op(func, std::make_index_sequence<dim>{});
   }
@@ -41,7 +41,7 @@ public:
   {}
 
   template<class V>
-  constexpr Vect(Vect<dim, V> const &other)
+  constexpr Vect(Vect<V, dim> const &other)
   : Vect(other, std::make_index_sequence<dim>{})
   {}
 
@@ -93,7 +93,7 @@ public:
 
 #define VECT_OPERATOR_DEF(OP)						\
   template<class U>							\
-  constexpr Vect<dim, T> &operator OP##=(Vect<dim, U> const &other)	\
+  constexpr Vect<T, dim> &operator OP##=(Vect<U, dim> const &other)	\
   {									\
     for (std::size_t i(0u); i != dim; ++i)				\
       data[i] OP## = other[i];						\
@@ -101,16 +101,16 @@ public:
   };									\
 									\
   template<class U>							\
-  constexpr auto operator OP(Vect<dim, U> const &other) const		\
+  constexpr auto operator OP(Vect<U, dim> const &other) const		\
   {									\
-    Vect<dim, decltype(data[0] OP other[0])> result{*this};		\
+    Vect<decltype(data[0] OP other[0]), dim> result{*this};	        \
 									\
     result OP## = other;						\
     return result;							\
   };									\
 									\
   template<class U>							\
-  constexpr Vect<dim, T> &operator OP##=(U const &other)		\
+  constexpr Vect<T, dim> &operator OP##=(U const &other)		\
   {									\
     for (auto &elem : *this)						\
       elem OP## = other;						\
@@ -120,7 +120,7 @@ public:
   template<class U>							\
   constexpr auto operator OP(U const &other) const			\
   {									\
-    Vect<dim, decltype(data[0] OP other)> result{*this};		\
+    Vect<decltype(data[0] OP other), dim> result{*this};		\
 									\
     result OP## = other;						\
     return result;							\
@@ -136,7 +136,7 @@ public:
   VECT_OPERATOR_DEF(&);
 
   // TODO optimize ?
-  constexpr bool equals(Vect<dim, T> const &other) const
+  constexpr bool equals(Vect<T, dim> const &other) const
   {
     unsigned int i(0);
 
@@ -147,20 +147,20 @@ public:
 
 private:
   template<class FUNC, size_t... indices>
-  constexpr Vect<dim, T> map_impl(FUNC &&func, std::index_sequence<indices...>) const
+  constexpr Vect<T, dim> map_impl(FUNC &&func, std::index_sequence<indices...>) const
   {
     return {func(data[indices])...};
   }
 
 public:
   template<class FUNC>
-  constexpr Vect<dim, T> map(FUNC &&func) const
+  constexpr Vect<T, dim> map(FUNC &&func) const
   {
     return (map_impl(func, std::make_index_sequence<dim>{}));
   }
 
 #define VECT_UNARY_OP_DEF(OP)				\
-  constexpr Vect<dim, T> operator OP(void) const	\
+  constexpr Vect<T, dim> operator OP(void) const	\
   {							\
     struct mapper					\
     {							\
@@ -187,7 +187,7 @@ public:
     return (result);
   }
 
-  constexpr T scalar(Vect<dim, T> const &other) const
+  constexpr T scalar(Vect<T, dim> const &other) const
   {
     return ((*this * other).sum());
   }
@@ -197,7 +197,7 @@ public:
     return ((*this * *this).sum());
   }
 
-  Vect<dim, T> normalized() const
+  Vect<T, dim> normalized() const
   {
     return length2() > 0 ? ((*this) / sqrt(length2())) : *this;
   }
