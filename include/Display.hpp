@@ -2,9 +2,18 @@
 # define DISPLAY_HPP
 
 # include <SFML/Graphics.hpp>
+# include <map>
+# include <string>
+# include <stdexcept>
 
 namespace disp
 {
+
+  enum class TextureList
+    {
+     LEGACY
+    };
+
   class	Display
   {
 
@@ -19,7 +28,10 @@ namespace disp
 
   private:
 
+    void loadTexture(TextureList, std::string);
+
     sf::RenderWindow window;
+    std::map<TextureList, sf::Texture> textures;
 
   };
 }

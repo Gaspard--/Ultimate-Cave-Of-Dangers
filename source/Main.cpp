@@ -1,9 +1,11 @@
 # include "Display.hpp"
 # include "logic/Logic.hpp"
+# include <iostream>
 
 int main()
 {
-  disp::Display display;
+  try {
+      disp::Display display;
   logic::Logic logic;
   sf::RenderWindow& window = display.getWindow();
 
@@ -19,5 +21,9 @@ int main()
       logic.update();
       display.render();
     }
+  } catch (std::exception& e) {
+    std::cerr << "Error : " << e.what() << std::endl;
+    return (1);
+  }
   return (0);
 }
