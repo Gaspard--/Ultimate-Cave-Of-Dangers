@@ -22,33 +22,38 @@ namespace logic
       }
     grounded -= !!grounded;
     onWall -= !!onWall;
+    speed[1] *= FixedPoint<-8>{255};
   }
 
   void Entity::jump() noexcept
   {
     if (grounded)
       {
-	speed[0] = FixedPoint<-8>{256};
+	speed[1] = FixedPoint<-8>{256};
       }
     else if (onWall.any())
       {
-	speed[0] = FixedPoint<-8>{128};
-	speed[1] = FixedPoint<-8>{(!onWall[1] - !onWall[0]) * 32};
+	speed[0] = FixedPoint<-8>{(!onWall[1] - !onWall[0]) * 32};
+	speed[1] = FixedPoint<-8>{128};
+      }
+  }
+
+  void Entity::drift(int dir) noexcept
+  {
+    speed[0] += FixedPoint<-8>{dir * 32};
+  }
+
+  void Entity::dash(int dir) noexcept
+  {
+    if (grounded)
+      {
+	speed[0] += FixedPoint<-8>{dir * 128};
+	speed[1] += FixedPoint<-8>{32};
       }
   }
 
   bool Entity::shouldBeRemoved() const noexcept
   {
     return false;
-  }
-
-  disp::TextureList const & Entity::getTexture() const
-  {
-    return (texture);
-  }
-
-  Vect<FixedPoint<-8>, 2u> const & Entity::getPosition() const
-  {
-    return (position);
   }
 }

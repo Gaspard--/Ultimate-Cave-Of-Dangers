@@ -15,6 +15,7 @@ namespace logic
 
   class Entity
   {
+    Vect<FixedPoint<-8>, 2u> size;
     Vect<FixedPoint<-8>, 2u> position;
     Vect<FixedPoint<-8>, 2u> speed;
     unsigned int grounded;
@@ -25,8 +26,23 @@ namespace logic
 
     void update(Logic &);
     void jump() noexcept;
+    void drift(int dir) noexcept;
+    void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
-    disp::TextureList const & getTexture() const;
-    Vect<FixedPoint<-8>, 2u> const & getPosition() const;
+
+    disp::TextureList const & getTexture() const noexcept
+    {
+      return (texture);
+    }
+
+    Vect<FixedPoint<-8>, 2u> const & getPosition() const noexcept
+    {
+      return position;
+    }
+
+    Vect<FixedPoint<-8>, 2u> const &getSize() const noexcept
+    {
+      return size;
+    }
   };
 };

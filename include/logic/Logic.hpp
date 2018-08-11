@@ -38,6 +38,9 @@ namespace logic
     void handleEvent(Playing  &, sf::Event const &);
     void handleEvent(Pause &, sf::Event const &);
 
+    Entity &getPlayer() noexcept;
+    Entity const &getPlayer() const noexcept;
+
     std::variant<Playing, Pause, GameOver> const &getState() const noexcept;
     std::vector<Entity> const &getEntities() const noexcept;
 
