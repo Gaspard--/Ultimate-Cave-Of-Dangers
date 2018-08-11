@@ -22,15 +22,16 @@ class Cave_chunk
 {
 private:
   std::array<std::array<Cave_tile, CHUNK_SIZE>, CHUNK_SIZE> chunk;
-  std::vector<Vect<int, 2u>> entry_points;
-  Vect<int, 2> pos;
+  std::vector<Vect<unsigned int, 2u>> entry_points;
+  Vect<unsigned int, 2> pos;
 
 public:
   Cave_chunk() = default;
   Cave_chunk(const std::vector<Vect<int, 2u>> &entry_points);
 
   void init(const Cave_chunk &entry_points);
-  const Vect<int, 2u> get_pos() const;
+  const Vect<unsigned int, 2u> &get_pos() const;
   Cave_tile const &get_tile(unsigned int x, unsigned int y) const;
+  Cave_tile &get_tile(unsigned int x, unsigned int y);
   void print() const;
 };
