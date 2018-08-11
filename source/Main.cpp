@@ -1,24 +1,29 @@
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
+# include "Display.hpp"
+# include "logic/Logic.hpp"
+# include <iostream>
+
 int main()
 {
-    // Create the main window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
-    // Start the game loop
-    while (window.isOpen())
+  try {
+      disp::Display display;
+  logic::Logic logic;
+  sf::RenderWindow& window = display.getWindow();
+
+  while (display.isRunning())
     {
-        // Process events
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // Close window: exit
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-        // Clear screen
-        window.clear();
-        // Update the window
-        window.display();
+      sf::Event e;
+      while (window.pollEvent(e)) {
+	if (e.type == sf::Event::Closed)
+	  window.close();
+	else
+	  logic.handleEvent(e);
+      }
+      logic.update();
+      display.render();
     }
-    return EXIT_SUCCESS;
+  } catch (std::exception& e) {
+    std::cerr << "Error : " << e.what() << std::endl;
+    return (1);
+  }
+  return (0);
 }
