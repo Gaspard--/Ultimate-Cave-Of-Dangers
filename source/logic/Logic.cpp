@@ -17,4 +17,10 @@ namespace logic
 				    return entity.shouldBeRemoved();
 				  }), entities.end());
   }
+
+  void Logic::handleEvent(const sf::Event& e)
+  {
+    (void)e;
+  }
+
 }

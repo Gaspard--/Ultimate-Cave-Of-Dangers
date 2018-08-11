@@ -4,6 +4,8 @@
 
 #include "logic/Entity.hpp"
 
+# include <SFML/Graphics.hpp>
+
 namespace logic
 {
   class Logic
@@ -15,5 +17,8 @@ namespace logic
     Logic();
 
     void update();
+    void handleEvent(const sf::Event& e);
+    void checkEvent();
+
   };
 };
