@@ -37,6 +37,6 @@ namespace logic
     void handleEvent(Pause &, sf::Event const &);
 
     std::variant<Playing, Pause, GameOver> const &getState() const noexcept;
-
+    std::vector<Entity> const &getEntities() const noexcept;
   };
 };
