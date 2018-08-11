@@ -28,12 +28,15 @@ namespace disp
     return (window.isOpen());
   }
 
-  void Display::render(logic::Logic& logic)
+  void Display::render(logic::Logic const &logic)
   {
     window.clear();
+    camera.offset = (Vect<double, 2u>(static_cast<double>(window.getSize().x), static_cast<double>(window.getSize().y)) / 2) - Vect<float, 2u>::fromFixedPoint<-8>(logic.getPlayerPosition());
     for (logic::Entity const & entity : logic.getEntities())
       {
 	sf::Sprite sprite(textures[entity.getTexture()]);
+	Vect<float, 2u> position = camera.apply(Vect<float, 2u>::fromFixedPoint<-8>(entity.getPosition()));
+	sprite.setPosition(position[0], position[1]);
 	window.draw(sprite);
       }
     window.display();

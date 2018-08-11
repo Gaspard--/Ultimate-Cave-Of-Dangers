@@ -8,6 +8,7 @@
 # include <vector>
 
 # include "logic/Logic.hpp"
+# include "Camera.hpp"
 
 namespace logic
 {
@@ -31,7 +32,7 @@ namespace disp
     ~Display();
 
     bool isRunning() const;
-    void render(logic::Logic&);
+    void render(logic::Logic const &);
     sf::RenderWindow& getWindow();
 
   private:
@@ -40,6 +41,7 @@ namespace disp
 
     sf::RenderWindow window;
     std::map<TextureList, sf::Texture> textures;
+    Camera camera;
 
   };
 }

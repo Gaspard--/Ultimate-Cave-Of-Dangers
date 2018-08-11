@@ -93,4 +93,9 @@ namespace logic
   {
     return entities;
   }
+
+  Vect<FixedPoint<-8>, 2u> Logic::getPlayerPosition() const noexcept
+  {
+    return Vect<FixedPoint<-8>, 2u>();
+  }
 }
