@@ -56,14 +56,4 @@ namespace logic
   {
     return false;
   }
-
-  disp::TextureList const & Entity::getTexture() const
-  {
-    return (texture);
-  }
-
-  Vect<FixedPoint<-8>, 2u> const & Entity::getPosition() const
-  {
-    return (position);
-  }
 }
