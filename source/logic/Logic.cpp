@@ -19,6 +19,16 @@ namespace logic
     return entities.front();
   }
 
+  CaveMap &Logic::getMap() noexcept
+  {
+    return (caveMap);
+  }
+
+  CaveMap const &Logic::getMap() const noexcept
+  {
+    return (caveMap);
+  }
+
   void Logic::update()
   {
     if (std::holds_alternative<Playing>(state))

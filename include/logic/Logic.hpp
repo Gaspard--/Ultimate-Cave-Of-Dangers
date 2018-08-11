@@ -45,6 +45,9 @@ namespace logic
     Entity &getPlayer() noexcept;
     Entity const &getPlayer() const noexcept;
 
+    CaveMap &getMap() noexcept;
+    CaveMap const &getMap() const noexcept;
+
     std::variant<Playing, Pause, GameOver> const &getState() const noexcept;
     std::vector<Entity> const &getEntities() const noexcept;
 

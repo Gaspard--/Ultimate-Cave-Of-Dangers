@@ -20,7 +20,13 @@ namespace disp
 
   enum class TextureList
     {
-     LEGACY
+     LEGACY,
+     CAVE_TILE,
+     MINEKART,
+     TABLE,
+     BARREL,
+     CORNER,
+     SIDE
     };
 
   class	Display
