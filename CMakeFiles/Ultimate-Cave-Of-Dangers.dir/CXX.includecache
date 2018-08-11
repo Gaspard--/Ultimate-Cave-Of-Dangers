@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/litige/Ultimate-Cave-Of-Dangers/source/Main.cpp
+SFML/Audio.hpp
+-
+SFML/Graphics.hpp
+-
+
