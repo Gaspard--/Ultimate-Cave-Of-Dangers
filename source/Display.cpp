@@ -38,20 +38,32 @@ namespace disp
   {
     window.clear();
     Vect<unsigned, 2u> cameraPosition = Vect<unsigned, 2u>::fromFixedPoint<-8>(logic.getCameraPosition());
-    camera.offset = (Vect<double, 2u>(static_cast<double>(window.getSize().x), static_cast<double>(window.getSize().y)) / 2.0) - cameraPosition;
+    camera.offset = cameraPosition;
+    camera.zoom = {1 / 16.0f, 1 / 16.0f * float(window.getSize().x) / window.getSize().y};
+
+    auto const convertToScreen([&](Vect<float, 2u> position) noexcept
+    {
+      (position[1] *= -1.0) += float(window.getSize().x) / window.getSize().y;
+      position *= Vect<float, 2u>(window.getSize().x, window.getSize().y);
+      return position;
+    });
+
     const CaveMap& map = logic.getMap();
     sf::Vector2u tileDim = textures.at(TextureList::CAVE_TILE).getSize();
     unsigned xDiff = static_cast<unsigned>((window.getSize().x / 2.0) / static_cast<double>(tileDim.x));
     unsigned yDiff = static_cast<unsigned>((window.getSize().y / 2.0) / static_cast<double>(tileDim.y));
 
-    for (unsigned x = cameraPosition[0] - xDiff ; x < cameraPosition[0] + xDiff ; ++x)
-      for (unsigned y = cameraPosition[1] - yDiff ; y < cameraPosition[1] + yDiff ; ++y)
+    for (unsigned x = cameraPosition[0] - 16 ; x != cameraPosition[0] + 17 ; ++x)
+      for (unsigned y = cameraPosition[1] - 16 ; y != cameraPosition[1] + 17 ; ++y)
 	{
-	  if (map.getTile(Vect<unsigned, 2u>(x, y)).type == TileType::None)
+	  if (map.getTile(Vect<unsigned, 2u>(x, y)).type == TileType::Empty)
 	    continue;
 	  sf::Sprite sprite(textures[TextureList::CAVE_TILE]);
-	  Vect<float, 2u> position = camera.apply(Vect<unsigned, 2u>(x, y));
-	  sprite.setPosition(position[0], static_cast<float>(window.getSize().y) - position[1]);
+	  Vect<float, 2u> position = convertToScreen(camera.apply(Vect<unsigned, 2u>(x, y)));
+      
+	  sprite.setPosition(position[0], position[1]);
+	  sprite.setScale(camera.zoom[0] * window.getSize().x / tileDim.x,
+			  camera.zoom[1] * window.getSize().y / tileDim.y);
 	  window.draw(sprite);
 	}
 
