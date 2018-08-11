@@ -42,4 +42,9 @@ namespace logic
   {
     return state;
   }
+
+  std::vector<Entity> const &Logic::getEntities() const noexcept
+  {
+    return entities;
+  }
 }
