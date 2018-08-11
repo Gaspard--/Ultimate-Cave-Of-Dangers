@@ -1,22 +1,25 @@
 #include "Cave_map.hpp"
 
 Cave_map::Cave_map()
+  : firstChunk(1)
 {
-  next_map_choice = -1;
+  chunks[0] = Cave_chunk();
+  while (firstChunk)
+    genNextChunk();
 }
 
-
-void Cave_map::gen_map()
+void Cave_map::genNextChunk()
 {
-  // for (auto &line : current_map)
-  //   {
-  //     std::fill(line.begin(), line.end(), Cave_tile(tile_type::Wall));
-  //   }
-  // for (int i = 0; i < this.next_map.size(); i++)
-  //   {
-  //     for (auto &line : current_map)
-  // 	{
-  // 	  std::fill(line.begin(), line.end(), Cave_tile(tile_type::Wall));
-  // 	}
-  //   }
+  chunks[firstChunk] = Cave_chunk(chunks[(chunks.size() + firstChunk - 1) % chunks.size()]);
+  ++firstChunk %= chunks.size();
+}
+
+Cave_chunk &Cave_map::getChunk(size_t index) noexcept
+{
+  return chunks[(firstChunk + index) % chunks.size()];
+}
+
+Cave_chunk const &Cave_map::getChunk(size_t index) const noexcept
+{
+  return chunks[(firstChunk + index) % chunks.size()];
 }

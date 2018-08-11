@@ -1,32 +1,32 @@
 #include <iostream>
 
-#include "Cave_chunck.hpp"
+#include "Cave_chunk.hpp"
 
-Cave_chunck::Cave_chunck(Cave_chunck const &parent)
+Cave_chunk::Cave_chunk(Cave_chunk const &parent)
 {
   unsigned int nb_room = 0;
 
   for (auto &pos : parent.entry_points)
     {
-      chunck[pos[0]][pos[1]].type = tile_type::Entry;
+      chunk[pos[0]][pos[1]].type = tile_type::Entry;
     }
 
   while (nb_room < ROOM_LIMITE);
 }
 
-const Vect<int, 2u> Cave_chunck::get_pos() const
+const Vect<int, 2u> Cave_chunk::get_pos() const
 {
   return pos;
 }
 
-Cave_tile const &Cave_chunck::get_tile(unsigned int x, unsigned int y) const
+Cave_tile const &Cave_chunk::get_tile(unsigned int x, unsigned int y) const
 {
-  return chunck[y][x];
+  return chunk[y][x];
 }
 
-void Cave_chunck::print() const
+void Cave_chunk::print() const
 {
-  for (auto &line : chunck)
+  for (auto &line : chunk)
     {
       for (auto &tile : line)
 	{
