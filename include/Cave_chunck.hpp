@@ -5,8 +5,10 @@
 
 #include <array>
 #include <iostream>
+#include <vector>
 
 #include "Map_tile.hpp"
+#include "Vect.hpp"
 
 enum class exit_direction : char
 {
@@ -19,14 +21,16 @@ enum class exit_direction : char
 class Cave_chunck
 {
 private:
-	std::array<std::array<tile, CHUNCK_SIZE>, CHUNCK_SIZE> chunck;
-	std::vector<int, 2u> *entry_point;
-	std::vector<int, 2> pos;
+  std::array<std::array<Cave_tile, CHUNCK_SIZE>, CHUNCK_SIZE> chunck;
+  std::vector<Vect<int, 2u>> entry_points;
+  Vect<int, 2> pos;
 
 public:
-	Cave_chunck(const unsigned int[2] *entry_point);
-	~Cave_chunck();
-	const std::vector<int, 2u> get_pos() const;
-	Cave_tile const &get_tile(unsigned int x, unsigned int y) const;
-	void print(); const
+  Cave_chunck() = default;
+  Cave_chunck(const std::vector<Vect<int, 2u>> &entry_points);
+  explicit Cave_chunck(const Cave_chunck &entry_points);
+  ~Cave_chunck();
+  const Vect<int, 2u> get_pos() const;
+  Cave_tile const &get_tile(unsigned int x, unsigned int y) const;
+  void print() const;
 };

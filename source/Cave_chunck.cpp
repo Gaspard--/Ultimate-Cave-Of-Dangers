@@ -1,57 +1,54 @@
+#include <iostream>
 
+#include "Cave_chunck.hpp"
 
-Cave_chunck::Cave_chunck(Cave_chunck parent)
+Cave_chunck::Cave_chunck(Cave_chunck const &parent)
 {
-	unsigned int nb_room = 0;
+  unsigned int nb_room = 0;
 
-	for (auto &pos : entry_point)
-	{
-		chunck[pos.y][pos.x].type = tile_type::Entry;
-	}
+  for (auto &pos : parent.entry_points)
+    {
+      chunck[pos[0]][pos[1]].type = tile_type::Entry;
+    }
 
-	while (nb_room < ROOM_LIMITE)
+  while (nb_room < ROOM_LIMITE);
 }
 
-const std::vector<int, 2u>Cave_chunck::get_pos() const
+const Vect<int, 2u> Cave_chunck::get_pos() const
 {
-	return(pos);
+  return pos;
 }
 
 Cave_tile const &Cave_chunck::get_tile(unsigned int x, unsigned int y) const
 {
-	return(const &chunck[y][x]);
+  return chunck[y][x];
 }
 
-void Cave_chunck::print()
+void Cave_chunck::print() const
 {
-	for (auto &line : chunck)
+  for (auto &line : chunck)
+    {
+      for (auto &tile : line)
 	{
-		for (auto &tile : line)
-		{
-			switch (tile.type)
-			{
-				case None:
-					std::cout << ' ';
-					break;
-				case Wall:
-					std::cout << 'W';
-					break;
-				case Entry:
-					std::cout << 'E';
-					break;
-				case Platform:
-					std::cout << '_';
-					break;
-				default:
-					std::cout << '*';
-					break;
-			}
-			std::cout << endl;
-		}
+	  switch (tile.type)
+	    {
+	    case tile_type::None:
+	      std::cout << ' ';
+	      break;
+	    case tile_type::Wall:
+	      std::cout << 'W';
+	      break;
+	    case tile_type::Entry:
+	      std::cout << 'E';
+	      break;
+	    case tile_type::Platform:
+	      std::cout << '_';
+	      break;
+	    default:
+	      std::cout << '*';
+	      break;
+	    }
+	  std::cout << std::endl;
 	}
-}
-
-Cave_chunck::~Cave_chunck()
-{
-	delete entry_point
+    }
 }

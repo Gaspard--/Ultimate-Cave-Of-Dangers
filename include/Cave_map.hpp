@@ -8,7 +8,10 @@
 class Cave_map
 {
 private:
-	std::array<Cave_chunck, 10> loaded_chunck;
+  std::array<Cave_chunck, 10> loaded_chunck;
+  int next_map_choice;
 public:
-	void	print_map();
+  Cave_map();
+  void	print_map();
+  void gen_map();
 };

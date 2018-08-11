@@ -16,6 +16,10 @@ enum class decoration_type : char
 
 class Cave_tile {
 public:
-	tile_type type;
-	decoration decoration;
+  tile_type type;
+  decoration_type decoration;
+
+  Cave_tile(tile_type type = tile_type::Wall,
+	    decoration_type decoration = decoration_type::None);
+
 };
