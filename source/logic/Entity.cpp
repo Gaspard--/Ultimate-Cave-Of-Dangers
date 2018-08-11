@@ -4,8 +4,9 @@
 namespace logic
 {
 
-  Entity::Entity():
-    texture(disp::TextureList::LEGACY)
+  Entity::Entity(disp::TextureList texture)
+    : texture(texture)
+    , size(FixedPoint<0>(1), FixedPoint<0>(2))
   {
   }
 

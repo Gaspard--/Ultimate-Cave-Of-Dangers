@@ -22,7 +22,7 @@ namespace logic
     Vect<unsigned int, 2u> onWall;
     disp::TextureList texture;
   public:
-    Entity();
+    Entity(disp::TextureList);
 
     void update(Logic &);
     void jump() noexcept;

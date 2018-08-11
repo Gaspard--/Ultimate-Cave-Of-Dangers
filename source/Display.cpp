@@ -43,24 +43,25 @@ namespace disp
 
     auto const convertToScreen([&](Vect<float, 2u> position) noexcept
     {
-      (position[1] *= -1.0) += float(window.getSize().x) / window.getSize().y;
-      position *= Vect<float, 2u>(window.getSize().x, window.getSize().y);
+      position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
+      position += Vect<float, 2u>(float(window.getSize().x), float(window.getSize().y)) * 0.5f;
       return position;
     });
 
     const CaveMap& map = logic.getMap();
     sf::Vector2u tileDim = textures.at(TextureList::CAVE_TILE).getSize();
-    unsigned xDiff = static_cast<unsigned>((window.getSize().x / 2.0) / static_cast<double>(tileDim.x));
-    unsigned yDiff = static_cast<unsigned>((window.getSize().y / 2.0) / static_cast<double>(tileDim.y));
+    // unsigned xDiff = static_cast<unsigned>((window.getSize().x / 2.0) / static_cast<double>(tileDim.x));
+    // unsigned yDiff = static_cast<unsigned>((window.getSize().y / 2.0) / static_cast<double>(tileDim.y));
 
     for (unsigned x = cameraPosition[0] - 16 ; x != cameraPosition[0] + 17 ; ++x)
       for (unsigned y = cameraPosition[1] - 16 ; y != cameraPosition[1] + 17 ; ++y)
 	{
-	  if (map.getTile(Vect<unsigned, 2u>(x, y)).type == TileType::Empty)
+	  if (map.getTile(Vect<unsigned, 2u>(int(x), int(y))).type == TileType::Empty)
 	    continue;
 	  sf::Sprite sprite(textures[TextureList::CAVE_TILE]);
-	  Vect<float, 2u> position = convertToScreen(camera.apply(Vect<unsigned, 2u>(x, y)));
+	  Vect<float, 2u> position = convertToScreen(camera.apply(Vect<int, 2u>(x, y)));
       
+	  sprite.setOrigin(0, tileDim.y);
 	  sprite.setPosition(position[0], position[1]);
 	  sprite.setScale(camera.zoom[0] * window.getSize().x / tileDim.x,
 			  camera.zoom[1] * window.getSize().y / tileDim.y);
@@ -70,8 +71,11 @@ namespace disp
     for (logic::Entity const & entity : logic.getEntities())
       {
 	sf::Sprite sprite(textures[entity.getTexture()]);
-	Vect<float, 2u> position = camera.apply(Vect<float, 2u>::fromFixedPoint<-8>(entity.getPosition()));
-	sprite.setPosition(position[0], static_cast<float>(window.getSize().y) - position[1]);
+	Vect<float, 2u> position = convertToScreen(camera.apply(Vect<float, 2u>::fromFixedPoint<-8>(entity.getPosition())));
+	sprite.setOrigin(0, float(textures[entity.getTexture()].getSize().y));
+	sprite.setPosition(position[0], position[1]);
+	sprite.setScale(camera.zoom[0] * textures[entity.getTexture()].getSize().x * entity.getSize()[0].getFloatValue() / tileDim.x,
+			camera.zoom[1] * textures[entity.getTexture()].getSize().y * entity.getSize()[1].getFloatValue() / tileDim.y);
 	window.draw(sprite);
       }
     window.display();

@@ -38,7 +38,7 @@ public:
   }
 
   template<int otherExponent>
-  explicit constexpr FixedPoint(FixedPoint<otherExponent> other) noexcept
+  constexpr FixedPoint(FixedPoint<otherExponent> other) noexcept
   : value(logicalLShift<otherExponent - exponent>(other.value))
   {
     static_assert(otherExponent - exponent < 16 && exponent - otherExponent < 16); // sanity to not lose to much precision
