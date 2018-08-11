@@ -17,7 +17,7 @@ namespace logic
   {
     Vect<FixedPoint<-8>, 2u> size;
     Vect<FixedPoint<-8>, 2u> position;
-    Vect<FixedPoint<-8>, 2u> speed;
+    Vect<FixedPoint<-8, int>, 2u> speed;
     unsigned int grounded;
     Vect<unsigned int, 2u> onWall;
     disp::TextureList texture;

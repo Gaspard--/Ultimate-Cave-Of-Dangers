@@ -1,17 +1,27 @@
 #pragma once
 
-template<int exponent>
+#include <type_traits>
+
+template<int exponent, class StoreType = unsigned int>
 class FixedPoint
 {
-  using StoreType = int;
-
-  template<int shift>
-  static StoreType logicalLShift(StoreType val)
+  template<int shift, class Type>
+  static constexpr Type logicalLShift(Type val) noexcept
   {
-    if constexpr (shift < 0)
-      return static_cast<unsigned int>(val) >> -shift;
+    if constexpr (std::is_signed_v<Type>)
+      {
+	if (val > 0)
+	  return logicalLShift(std::make_unsigned_t<Type>(val));
+	else
+	  return -logicalLShift(std::make_unsigned_t<Type>(-val));
+      }
     else
-      return static_cast<unsigned int>(val) << shift;
+      {
+	if constexpr (shift < 0)
+          return static_cast<unsigned int>(val) >> -shift;
+	else
+	  return static_cast<unsigned int>(val) << shift;
+      }
   }
   
 public:
@@ -34,53 +44,53 @@ public:
     static_assert(otherExponent - exponent < 16 && exponent - otherExponent < 16); // sanity to not lose to much precision
   }
 
-  constexpr FixedPoint &operator *=(FixedPoint const &other) noexcept
+  constexpr FixedPoint &operator*=(FixedPoint const &other) noexcept
   {									
     value *= other.value;						
     return *this;							
   }
 
   template<int otherExponent>
-  constexpr FixedPoint<exponent + otherExponent> operator*(FixedPoint<otherExponent> const &other) const noexcept
+  constexpr FixedPoint<exponent + otherExponent> operator*(FixedPoint<otherExponent, StoreType> const &other) const noexcept
   {	
     return FixedPoint<exponent + otherExponent>(value * other.value);
   }
 
   template<int otherExponent>
-  constexpr FixedPoint &operator*=(FixedPoint<otherExponent> const &other) noexcept
+  constexpr FixedPoint &operator*=(FixedPoint<otherExponent, StoreType> const &other) noexcept
   {				
     return *this = FixedPoint(other * *this);
   }
 
-  constexpr FixedPoint &operator/=(FixedPoint<0> const &other) noexcept
+  constexpr FixedPoint &operator/=(FixedPoint<0, StoreType> const &other) noexcept
   {									
     value /= other.value;						
     return *this;							
   }
 
   template<int otherExponent>
-  constexpr FixedPoint<exponent - otherExponent> operator/(FixedPoint<otherExponent> const &other) const noexcept
+  constexpr FixedPoint<exponent - otherExponent> operator/(FixedPoint<otherExponent, StoreType> const &other) const noexcept
   {	
     return FixedPoint<exponent - otherExponent>(value / other.value);
   }
 
   template<int otherExponent>
-  constexpr FixedPoint &operator/=(FixedPoint<otherExponent> const &other) noexcept
+  constexpr FixedPoint &operator/=(FixedPoint<otherExponent, StoreType> const &other) noexcept
   {				
     return *this = FixedPoint(other / *this);
   }
 
-  template<int otherExponent>
-  constexpr FixedPoint &operator-=(FixedPoint<otherExponent> const &other) noexcept
+  template<int otherExponent, class OtherType>
+  constexpr FixedPoint &operator-=(FixedPoint<otherExponent, OtherType> const &other) noexcept
   {
-    value -= FixedPoint<exponent>(other).value;
+    value -= FixedPoint<exponent, OtherType>(other).value;
     return *this;
   }
 
-  template<int otherExponent>
-  constexpr FixedPoint &operator+=(FixedPoint<otherExponent> const &other) noexcept
+  template<int otherExponent, class OtherType>
+  constexpr FixedPoint &operator+=(FixedPoint<otherExponent, OtherType> const &other) noexcept
   {
-    value += FixedPoint<exponent>(other).value;
+    value += FixedPoint<exponent, OtherType>(other).value;
     return *this;
   }
   
