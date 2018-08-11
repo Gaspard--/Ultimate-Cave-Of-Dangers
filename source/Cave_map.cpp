@@ -10,7 +10,7 @@ Cave_map::Cave_map()
 
 void Cave_map::genNextChunk()
 {
-  chunks[firstChunk] = Cave_chunk(chunks[(chunks.size() + firstChunk - 1) % chunks.size()]);
+  chunks[firstChunk].init(chunks[(chunks.size() + firstChunk - 1) % chunks.size()]);
   ++firstChunk %= chunks.size();
 }
 

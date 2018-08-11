@@ -2,7 +2,7 @@
 
 #include "Cave_chunk.hpp"
 
-Cave_chunk::Cave_chunk(Cave_chunk const &parent)
+void Cave_chunk::init(Cave_chunk const &parent)
 {
   unsigned int nb_room = 0;
 
