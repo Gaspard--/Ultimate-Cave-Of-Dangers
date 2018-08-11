@@ -9,7 +9,7 @@ class Cave_map
 {
 private:
   std::array<Cave_chunk, 10> chunks;
-  int firstChunk;
+  size_t firstChunk;
 public:
   Cave_map();
 
