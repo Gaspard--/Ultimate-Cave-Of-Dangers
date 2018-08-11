@@ -13,6 +13,8 @@ int main()
       while (window.pollEvent(e)) {
 	if (e.type == sf::Event::Closed)
 	  window.close();
+	else
+	  logic.handleEvent(e);
       }
       logic.update();
       display.render();
