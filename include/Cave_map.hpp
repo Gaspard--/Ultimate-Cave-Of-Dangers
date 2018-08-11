@@ -3,15 +3,17 @@
 #include <array>
 #include <iostream>
 
-#include "Cave_chunck.hpp"
+#include "Cave_chunk.hpp"
 
 class Cave_map
 {
 private:
-  std::array<Cave_chunck, 10> loaded_chunck;
-  int next_map_choice;
+  std::array<Cave_chunk, 10> chunks;
+  size_t firstChunk;
 public:
   Cave_map();
-  void	print_map();
-  void gen_map();
+
+  void genNextChunk();
+  Cave_chunk &getChunk(size_t index) noexcept;
+  Cave_chunk const &getChunk(size_t index) const noexcept;
 };

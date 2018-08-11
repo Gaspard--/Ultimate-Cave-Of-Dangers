@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHUNCK_SIZE 256
+#define CHUNK_SIZE 256
 #define ROOM_LIMITE 10
 
 #include <array>
@@ -18,17 +18,18 @@ enum class exit_direction : char
 	South // shouldn't be possible
 };
 
-class Cave_chunck
+class Cave_chunk
 {
 private:
-  std::array<std::array<Cave_tile, CHUNCK_SIZE>, CHUNCK_SIZE> chunck;
+  std::array<std::array<Cave_tile, CHUNK_SIZE>, CHUNK_SIZE> chunk;
   std::vector<Vect<int, 2u>> entry_points;
   Vect<int, 2> pos;
 
 public:
-  Cave_chunck() = default;
-  Cave_chunck(const std::vector<Vect<int, 2u>> &entry_points);
-  explicit Cave_chunck(const Cave_chunck &entry_points);
+  Cave_chunk() = default;
+  Cave_chunk(const std::vector<Vect<int, 2u>> &entry_points);
+
+  void init(const Cave_chunk &entry_points);
   const Vect<int, 2u> get_pos() const;
   Cave_tile const &get_tile(unsigned int x, unsigned int y) const;
   void print() const;
