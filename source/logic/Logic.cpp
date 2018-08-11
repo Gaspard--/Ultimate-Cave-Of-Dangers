@@ -5,6 +5,7 @@
 namespace logic
 {
   Logic::Logic()
+    : state(Pause{})
   {
   }
 
@@ -20,20 +21,26 @@ namespace logic
 
   void Logic::update()
   {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    if (std::holds_alternative<Playing>(state))
       {
-	getPlayer().drift(-1);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	  {
+	    getPlayer().drift(-1);
+	  }
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	  {
+	    getPlayer().drift(1);
+	  }
       }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    if (!std::holds_alternative<Pause>(state))
       {
-	getPlayer().drift(1);
+	for (Entity &entity : entities)
+	  entity.update(*this);
+	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
+				      {
+					return entity.shouldBeRemoved();
+				      }), entities.end());
       }
-    for (Entity &entity : entities)
-      entity.update(*this);
-    entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
-				  {
-				    return entity.shouldBeRemoved();
-				  }), entities.end());
   }
 
   void Logic::handleEvent(const sf::Event& e)
