@@ -28,9 +28,14 @@ namespace disp
     return (window.isOpen());
   }
 
-  void Display::render()
+  void Display::render(logic::Logic& logic)
   {
     window.clear();
+    for (logic::Entity const & entity : logic.getEntities())
+      {
+	sf::Sprite sprite(textures[entity.getTexture()]);
+	window.draw(sprite);
+      }
     window.display();
   }
 

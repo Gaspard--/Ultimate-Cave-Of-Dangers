@@ -4,7 +4,8 @@
 namespace logic
 {
 
-  Entity::Entity()
+  Entity::Entity():
+    texture(disp::TextureList::LEGACY)
   {
   }
 
@@ -39,5 +40,15 @@ namespace logic
   bool Entity::shouldBeRemoved() const noexcept
   {
     return false;
+  }
+
+  disp::TextureList const & Entity::getTexture() const
+  {
+    return (texture);
+  }
+
+  Vect<FixedPoint<-8>, 2u> const & Entity::getPosition() const
+  {
+    return (position);
   }
 }

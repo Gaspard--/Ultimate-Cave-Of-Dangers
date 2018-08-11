@@ -9,6 +9,8 @@
 
 namespace logic
 {
+  class Entity;
+
   struct Playing
   {
   };

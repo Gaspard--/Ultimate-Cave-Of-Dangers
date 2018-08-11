@@ -19,7 +19,7 @@ int main()
 	  logic.handleEvent(e);
       }
       logic.update();
-      display.render();
+      display.render(logic);
     }
   } catch (std::exception& e) {
     std::cerr << "Error : " << e.what() << std::endl;

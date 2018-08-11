@@ -5,6 +5,14 @@
 # include <map>
 # include <string>
 # include <stdexcept>
+# include <vector>
+
+# include "logic/Logic.hpp"
+
+namespace logic
+{
+  class Logic;
+}
 
 namespace disp
 {
@@ -23,7 +31,7 @@ namespace disp
     ~Display();
 
     bool isRunning() const;
-    void render();
+    void render(logic::Logic&);
     sf::RenderWindow& getWindow();
 
   private:
