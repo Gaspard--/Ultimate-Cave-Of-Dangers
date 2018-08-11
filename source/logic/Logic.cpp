@@ -47,4 +47,9 @@ namespace logic
   {
     return entities;
   }
+
+  Vect<FixedPoint<-8>, 2u> const &Logic::getPlayerPosition() const
+  {
+    return Vect<FixedPoint<-8>, 2u>();
+  }
 }

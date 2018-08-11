@@ -4,6 +4,7 @@
 #include <utility>
 #include <math.h>
 #include <cstddef>
+# include "FixedPoint.hpp"
 
 // taken from raven-os/claws, will reintegrate major improvements
 template<class T, std::size_t dim>
@@ -236,5 +237,15 @@ public:
     while (i != dim && !data[i])
       i = i + 1;
     return (i != dim);
+  }
+
+  template<int exponent>
+  static Vect<float, dim> fromFixedPoint(const Vect<FixedPoint<exponent>, dim>& fixedPointVect)
+  {
+    Vect<float, dim> floatVect;
+
+    for (std::size_t i = 0 ; i < dim ; ++i)
+      floatVect[i] = fixedPointVect[i].getFloatValue();
+    return floatVect;
   }
 };

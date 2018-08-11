@@ -40,5 +40,7 @@ namespace logic
 
     std::variant<Playing, Pause, GameOver> const &getState() const noexcept;
     std::vector<Entity> const &getEntities() const noexcept;
+
+    Vect<FixedPoint<-8>, 2u> const &getPlayerPosition() const;
   };
 };
