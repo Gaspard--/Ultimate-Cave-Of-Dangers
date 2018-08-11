@@ -10,7 +10,7 @@ class CaveMap
 private:
   std::array<CaveChunk, 10> chunks;
   size_t firstChunk;
-  CaveTile outOfBounds;
+  Tile outOfBounds;
 
 public:
   CaveMap();
@@ -19,6 +19,6 @@ public:
   CaveChunk &getChunk(size_t index) noexcept;
   CaveChunk const &getChunk(size_t index) const noexcept;
 
-  CaveTile &getTile(Vect<unsigned int, 2> position) noexcept;
-  CaveTile const &getTile(Vect<unsigned int, 2> position) const noexcept;
+  Tile &getTile(Vect<unsigned int, 2> position) noexcept;
+  Tile const &getTile(Vect<unsigned int, 2> position) const noexcept;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHUNK_SIZE 256
+#define CHUNK_SIZE 64
 #define ROOM_LIMITE 10
 
 #include <array>
@@ -20,13 +20,14 @@ enum class ExitDirection : unsigned char
 class CaveChunk
 {
 private:
-  std::array<std::array<CaveTile, CHUNK_SIZE>, CHUNK_SIZE> tiles;
+  std::array<std::array<Tile, CHUNK_SIZE>, CHUNK_SIZE> tiles;
   Vect<unsigned int, 2> pos;
   ExitDirection exitDir;
 
 public:
   CaveChunk() = default;
 
+  void init(Vect<unsigned int, 2u> previous) noexcept;
   void init(const CaveChunk &previous) noexcept;
 
   const Vect<unsigned int, 2u> &getPos() const noexcept
@@ -34,14 +35,14 @@ public:
     return pos;
   }
 
-  CaveTile const &getTile(unsigned int x, unsigned int y) const noexcept
+  Tile const &getTile(Vect<unsigned int, 2u> pos) const noexcept
   {
-    return tiles[y][x];
+    return tiles[pos[1]][pos[0]];
   }
 
-  CaveTile &getTile(unsigned int x, unsigned int y) noexcept
+  Tile &getTile(Vect<unsigned int, 2u> pos) noexcept
   {
-    return tiles[y][x];
+    return tiles[pos[1]][pos[0]];
   }
 
   void print() const;
