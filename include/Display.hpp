@@ -44,6 +44,7 @@ namespace disp
   private:
 
     void loadTexture(TextureList, std::string);
+    void setUpSprite(sf::Sprite& sprite, sf::Texture const&, Vect<float, 2u> position) noexcept;
 
     sf::RenderWindow window;
     std::map<TextureList, sf::Texture> textures;
