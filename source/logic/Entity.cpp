@@ -4,8 +4,8 @@
 namespace logic
 {
 
-  Entity::Entity():
-    texture(disp::TextureList::LEGACY)
+  Entity::Entity(disp::TextureList texture):
+    texture(texture)
   {
   }
 

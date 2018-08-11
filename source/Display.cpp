@@ -36,6 +36,7 @@ namespace disp
       {
 	sf::Sprite sprite(textures[entity.getTexture()]);
 	Vect<float, 2u> position = camera.apply(Vect<float, 2u>::fromFixedPoint<-8>(entity.getPosition()));
+	sprite.setOrigin(static_cast<float>(textures[entity.getTexture()].getSize().x / 2.0), static_cast<float>(textures[entity.getTexture()].getSize().y / 2.0));
 	sprite.setPosition(position[0], position[1]);
 	window.draw(sprite);
       }
