@@ -20,7 +20,26 @@ namespace logic
 
   void Logic::handleEvent(const sf::Event& e)
   {
-    (void)e;
+    std::visit([&](auto &state)
+	       {
+		 handleEvent(state, e);
+	       }, state);
   }
 
+  void Logic::handleEvent(GameOver &, sf::Event const &)
+  {
+  }
+
+  void Logic::handleEvent(Playing  &, sf::Event const &)
+  {
+  }
+
+  void Logic::handleEvent(Pause &, sf::Event const &)
+  {
+  }
+
+  std::variant<Playing, Pause, GameOver> const &Logic::getState() const noexcept
+  {
+    return state;
+  }
 }
