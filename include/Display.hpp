@@ -26,7 +26,8 @@ namespace disp
      TABLE,
      BARREL,
      CORNER,
-     SIDE
+     SIDE,
+     BOB
     };
 
   class	Display
@@ -44,7 +45,7 @@ namespace disp
   private:
 
     void loadTexture(TextureList, std::string);
-    void setUpSprite(sf::Sprite& sprite, sf::Texture const&, Vect<float, 2u> position) noexcept;
+    void drawSprite(sf::Texture const&, Vect<float, 2u> position, Vect<float, 2u> size = {1.0f, 1.0f}) noexcept;
 
     sf::RenderWindow window;
     std::map<TextureList, sf::Texture> textures;

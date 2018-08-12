@@ -7,7 +7,7 @@ namespace logic
   Logic::Logic()
     : state(Playing{})
   {
-    entities.push_back(disp::TextureList::LEGACY);
+    entities.push_back(disp::TextureList::BOB);
   }
 
   Entity &Logic::getPlayer() noexcept
