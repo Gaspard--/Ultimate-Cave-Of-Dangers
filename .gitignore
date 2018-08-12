@@ -31,5 +31,7 @@
 *.out
 *.app
 Ultimate-Cave-Of-Dangers
+include/GL
+source/gl3w.c
 
 build

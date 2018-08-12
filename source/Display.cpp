@@ -1,4 +1,5 @@
-# include "Display.hpp"
+#include "Display.hpp"
+#include "logic/Logic.hpp"
 
 namespace disp
 {
@@ -45,13 +46,13 @@ namespace disp
     sf::Sprite sprite;
 
     sprite.setTexture(texture);
-    sprite.setOrigin(float(texture.getSize().x) / 2, float(texture.getSize().y) / 2);
+    sprite.setOrigin(float(texture.getSize().x) * 0.5f, float(texture.getSize().y) * 0.5f);
     if (rotation)
       sprite.setRotation(rotation);
     sprite.setScale(camera.zoom[0] * float(window.getSize().x) / float(texture.getSize().x) * size[0],
 		    camera.zoom[1] * float(window.getSize().y) / float(texture.getSize().y) * size[1]);
-    sprite.setTextureRect({0, 0, texture.getSize().x * repeat[0], texture.getSize().y * repeat[1]});
-    position += Vect<float, 2u>(0.5, -0.5);
+    sprite.setTextureRect({0, 0, int(texture.getSize().x) * repeat[0], int(texture.getSize().y) * repeat[1]});
+    position += Vect<float, 2u>(0.5f, -0.5f);
     position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
     sprite.setPosition(position[0], position[1]);
     window.draw(sprite);
@@ -72,6 +73,11 @@ namespace disp
       for (unsigned y = minY - 1; y != maxY + 1; ++y)
 	tiles.back().push_back(map.getTile(Vect<unsigned, 2u>(x, y)).type);
     }
+
+    auto renderWallGroup([this](int x, int y, unsigned int wallCount)
+    {
+      renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(x, y)), 0.0f, {1.0f, 1.0f}, {1, int(wallCount)});
+    });
 
     for (unsigned x = 1 ; x != maxX - minX + 1; ++x)
       {
@@ -112,7 +118,7 @@ namespace disp
 	      {
 		if (wallCount)
 		  {
-		    renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 2))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+		    renderWallGroup(int(x + minX - 1), int(y + minY - 2), wallCount);
 		    wallCount = 0;
 		  }
 		renderSprite(textures[textureType], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), rotation);
@@ -120,13 +126,13 @@ namespace disp
 	  } else {
 	    if (wallCount)
 	      {
-		renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 2))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+		renderWallGroup(int(x + minX - 1), int(y + minY - 2), wallCount);
 		wallCount = 0;
 	      }
 	  }
 	if (wallCount)
 	  {
-	    renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(maxY - 1))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+	    renderWallGroup(int(x + minX - 1), int(maxY - 1), wallCount);
 	    wallCount = 0;
 	  }
       }
@@ -158,7 +164,7 @@ namespace disp
   void Display::renderParalax(Vect<float, 2u> const &movement)
   {
     sf::Texture& texture = textures[TextureList::PARALAX];
-    paralaxPos += movement * Vect<float, 2u>(-2.f, 2.f);
+    paralaxPos += movement * Vect<float, 2u>(-2.0f, 2.0f);
     float textureWidth = static_cast<float>(texture.getSize().x);
     float textureHeight = static_cast<float>(texture.getSize().y);
 
@@ -197,8 +203,36 @@ namespace disp
       }
   }
 
+  void Display::renderWater(std::vector<logic::WaterDrop>::const_iterator const &begin, std::vector<logic::WaterDrop>::const_iterator const &end)
+  {
+    std::vector<float> data;
+
+    data.reserve(std::distance(begin, end) * 6 * 4);
+    auto dest(std::back_inserter(data));
+    for (auto it(begin); it < end; ++it)
+      {
+	for (Vect<float, 2> corner : std::array<Vect<float, 2>, 6>{{
+	    {-1.0f, -1.0f},
+	      {1.0f, -1.0f},
+		{-1.0f, 1.0f},
+		  {-1.0f, 1.0f},
+		    {1.0f, -1.0f},
+		      {1.0f, 1.0f}}})
+	  {
+	    auto position(camera.apply(Vect<float, 2u>{it->position[0].getFloatValue(), it->position[1].getFloatValue()}));
+	    for (uint32_t dir(0u); dir != 2; ++dir)
+	      ++dest = position[dir] - corner[dir] * logic::WaterDropSize.getFloatValue();
+	    for (uint32_t dir(0u); dir != 2; ++dir)
+	      ++dest = corner[dir];
+	  }
+      }
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, GLsizei(std::distance(begin, end) * 4));
+  }
+
   void Display::render(logic::Logic const &logic)
   {
+    //renderWater(logic.getWaterDrops().begin(), logic.getWaterDrops().end());
     window.clear();
     Vect<float, 2u> oldCameraPos = camera.offset;
     camera.offset = Vect<float, 2u>::fromFixedPoint(logic.getCameraPosition());
