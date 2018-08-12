@@ -13,7 +13,10 @@
 namespace logic
 {
   class Logic;
+  class Entity;
 }
+
+class CaveMap;
 
 namespace disp
 {
@@ -27,7 +30,9 @@ namespace disp
      BARREL,
      CORNER,
      SIDE,
-     BOB
+     BOB,
+     WALL,
+     PIECE_OF_CORNER,
     };
 
   class	Display
@@ -40,12 +45,15 @@ namespace disp
 
     bool isRunning() const;
     void render(logic::Logic const &);
+
     sf::RenderWindow& getWindow();
 
   private:
 
     void loadTexture(TextureList, std::string);
-    void drawSprite(sf::Texture const&, Vect<float, 2u> position, Vect<float, 2u> size = {1.0f, 1.0f}) noexcept;
+    void renderSprite(sf::Texture const&, Vect<float, 2u> position, float rotation = 0.0f, Vect<float, 2u> size = {1.0f, 1.0f}) noexcept;
+    void renderMap(CaveMap const &);
+    void renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end);
 
     sf::RenderWindow window;
     std::map<TextureList, sf::Texture> textures;
