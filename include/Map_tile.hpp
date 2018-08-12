@@ -22,4 +22,8 @@ public:
   Tile(TileType type = TileType::Wall,
        DecorationType decoration = DecorationType::None);
 
+  constexpr bool isSolid() noexcept
+  {
+    return type == TileType::Wall;
+  }
 };

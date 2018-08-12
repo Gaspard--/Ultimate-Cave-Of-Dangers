@@ -24,6 +24,7 @@ namespace logic
   public:
     Entity(disp::TextureList);
 
+    void updatePosition(Logic &);
     void update(Logic &);
     void jump() noexcept;
     void drift(int dir) noexcept;
