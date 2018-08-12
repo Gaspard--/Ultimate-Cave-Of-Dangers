@@ -16,7 +16,7 @@ namespace disp
     loadTexture(TextureList::BOB, "./resources/bob.png");
     loadTexture(TextureList::WALL, "./resources/wall.png");
     loadTexture(TextureList::PIECE_OF_CORNER, "./resources/piece_of_corner.png");
-    camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
+    textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
   }
 
@@ -39,14 +39,16 @@ namespace disp
     return (window.isOpen());
   }
 
-  void Display::renderSprite(sf::Texture const &texture, Vect<float, 2u> position, float rotation, Vect<float, 2u> size) noexcept
+  void Display::renderSprite(sf::Texture const &texture, Vect<float, 2u> position, float rotation, Vect<float, 2u> size, Vect<int, 2u> repeat) noexcept
   {
     sf::Sprite sprite;
+
     sprite.setTexture(texture);
     sprite.setOrigin(float(texture.getSize().x) / 2, float(texture.getSize().y) / 2);
     sprite.setRotation(rotation);
     sprite.setScale(camera.zoom[0] * float(window.getSize().x) / float(texture.getSize().x) * size[0],
 		    camera.zoom[1] * float(window.getSize().y) / float(texture.getSize().y) * size[1]);
+    sprite.setTextureRect({0, 0, texture.getSize().x * repeat[0], texture.getSize().y * repeat[1]});
     position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
     position += Vect<float, 2u>(float(window.getSize().x), float(window.getSize().y)) * 0.5f;
     sprite.setPosition(position[0], position[1]);
@@ -67,8 +69,9 @@ namespace disp
     }
 
     for (unsigned x = 1 ; x != maxX - minX + 1; ++x)
-      for (unsigned y = 1 ; y != maxY - minY + 1; ++y)
-	{
+      {
+	unsigned wallCount = 0;
+	for (unsigned y = 1 ; y != maxY - minY + 1; ++y)
 	  if (tiles[x][y] == TileType::Wall) {
 	    float rotation = 0.0f;
 	    TextureList textureType = TextureList::CAVE_TILE;
@@ -98,22 +101,45 @@ namespace disp
 		+ (float(tiles[x + 1][y] != TileType::Wall) * float(tiles[x][y - 1] != TileType::Wall)) * 180.0f
 		+ (float(tiles[x - 1][y] != TileType::Wall) * float(tiles[x][y - 1] != TileType::Wall)) * 270.0f;
 	    }
-	    renderSprite(textures[textureType], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), rotation);
+	    if (textureType == TextureList::WALL)
+	      ++wallCount;
+	    else
+	      {
+		if (wallCount)
+		  {
+		    renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1 - 1))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+		    wallCount = 0;
+		  }
+		renderSprite(textures[textureType], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), rotation);
+	      }
+	  } else {
+	    if (wallCount)
+	      {
+		renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1 - 1))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+		wallCount = 0;
+	      }
 	  }
-	}
+	if (wallCount)
+	  {
+	    renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(maxY - 1 - 1))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+	    wallCount = 0;
+	  }
+      }
   }
+
   void Display::renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end)
   {
     for (auto entity = begin ; entity != end ; ++entity)
       renderSprite(textures[entity->getTexture()],
-		 camera.apply(Vect<float, 2u>::fromFixedPoint(entity->getPosition())), 0.0f,
-		 {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()});
+		   camera.apply(Vect<float, 2u>::fromFixedPoint(entity->getPosition())), 0.0f,
+		   {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()});
   }
 
   void Display::render(logic::Logic const &logic)
   {
     window.clear();
     camera.offset = Vect<float, 2u>::fromFixedPoint(logic.getCameraPosition());
+    camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
     renderMap(logic.getMap());
     renderEntities(logic.getEntities().begin(), logic.getEntities().end());
     window.display();

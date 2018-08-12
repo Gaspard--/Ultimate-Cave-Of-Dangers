@@ -25,10 +25,17 @@ namespace logic
   {
   };
 
+  struct WaterDrop
+  {
+    Vect<FixedPoint<-8>, 2u> position;
+    Vect<FixedPoint<-16>, 2u> speed;
+  };
+
   class Logic
   {
   private:
     std::vector<Entity> entities;
+    std::vector<WaterDrop> waterDrops;
     Vect<FixedPoint<-8>, 2u> cameraPosition;
 
     std::variant<Playing, Pause, GameOver> state;
