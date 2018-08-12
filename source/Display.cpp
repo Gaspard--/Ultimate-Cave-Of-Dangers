@@ -63,10 +63,12 @@ namespace disp
     unsigned const maxX(unsigned(camera.offset[0] + 0.5f / camera.zoom[0]) + 2);
     unsigned const maxY(unsigned(camera.offset[1] + 0.5f / camera.zoom[1]) + 2);
     std::vector<std::vector<TileType>> tiles;
+    tiles.reserve(maxX - minX + 2);
     for (unsigned x = minX - 1; x != maxX + 1 ; ++x) {
       tiles.push_back(std::vector<TileType>());
+      tiles.back().reserve(maxY - minY + 2);
       for (unsigned y = minY - 1; y != maxY + 1; ++y)
-	tiles[x - (minX - 1)].push_back(map.getTile(Vect<unsigned, 2u>(x, y)).type);
+	tiles.back().push_back(map.getTile(Vect<unsigned, 2u>(x, y)).type);
     }
 
     for (unsigned x = 1 ; x != maxX - minX + 1; ++x)
