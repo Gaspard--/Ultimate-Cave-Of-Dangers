@@ -21,6 +21,7 @@ namespace logic
     unsigned int grounded;
     Vect<unsigned int, 2u> onWall;
     disp::TextureList texture;
+    sf::Clock timer;
 
     Vect<unsigned, 2u> hps;
   public:
@@ -32,6 +33,9 @@ namespace logic
     void drift(int dir) noexcept;
     void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
+
+    Vect<FixedPoint<-16, int>, 2u> const& getspeed() const noexcept;
+    sf::Clock const& getTimer() const noexcept;
 
     Vect<unsigned, 2u> const& getHps() const noexcept;
     Vect<unsigned, 2u>& getHps() noexcept;

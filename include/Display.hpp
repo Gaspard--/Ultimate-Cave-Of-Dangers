@@ -54,7 +54,7 @@ namespace disp
   private:
 
     void loadTexture(TextureList, std::string);
-    Vect<float, 2u> renderSprite(sf::Texture const&, Vect<float, 2u>, float = 0.0f, Vect<float, 2u> = {1.0f, 1.0f}, Vect<int, 2u> = {1, 1}) noexcept;
+    Vect<float, 2u> renderSprite(sf::Texture const&, Vect<float, 2u>, float = 0.0f, Vect<float, 2u> = {1.0f, 1.0f}, Vect<int, 2u> = {1, 1}, Vect<unsigned, 2u> = {1, 1}) noexcept;
     void renderMap(CaveMap const &);
     void renderWater(std::vector<logic::WaterDrop>::const_iterator const &begin, std::vector<logic::WaterDrop>::const_iterator const &end);
     void renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end);
