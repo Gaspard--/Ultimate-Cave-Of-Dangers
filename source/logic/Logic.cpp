@@ -48,7 +48,6 @@ namespace logic
 				      {
 					return entity.shouldBeRemoved();
 				      }), entities.end());
-	
       }
   }
 
@@ -69,20 +68,12 @@ namespace logic
     switch (ev.type)
       {
       case sf::Event::KeyPressed:
-	switch (ev.key.code)
-	  {
-	  case sf::Keyboard::Key::W:
-	    getPlayer().jump();
-	    break;
-	  case sf::Keyboard::Key::A:
-	    getPlayer().dash(-1);
-	    break;
-	  case sf::Keyboard::Key::D:
-	    getPlayer().dash(1);
-	    break;
-	  default:
-	    break;
-	  }
+	if (ev.key.code == sf::Keyboard::Key::W || ev.key.code == sf::Keyboard::Key::Space || ev.key.code == sf::Keyboard::Key::Z || ev.key.code == sf::Keyboard::Key::Up)
+	  getPlayer().jump();
+	else if (ev.key.code == sf::Keyboard::Key::D || ev.key.code == sf::Keyboard::Key::Right)
+	  getPlayer().dash(1);
+	else if (ev.key.code == sf::Keyboard::Key::A || ev.key.code == sf::Keyboard::Key::Q || ev.key.code == sf::Keyboard::Key::Left)
+	  getPlayer().dash(-1);
 	break;
       default:
 	break;
