@@ -239,8 +239,8 @@ public:
     return (i != dim);
   }
 
-  template<int exponent>
-  static Vect<float, dim> fromFixedPoint(const Vect<FixedPoint<exponent>, dim>& fixedPointVect)
+  template<class Type>
+  static Vect<float, dim> fromFixedPoint(const Vect<Type, dim>& fixedPointVect)
   {
     Vect<float, dim> floatVect;
 

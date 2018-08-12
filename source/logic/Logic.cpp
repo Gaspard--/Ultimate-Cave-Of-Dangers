@@ -5,7 +5,7 @@
 namespace logic
 {
   Logic::Logic()
-    : state(Pause{})
+    : state(Playing{})
   {
     entities.push_back(disp::TextureList::LEGACY);
   }
@@ -35,13 +35,10 @@ namespace logic
     if (std::holds_alternative<Playing>(state))
       {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	  {
-	    getPlayer().drift(-1);
-	  }
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	  {
-	    getPlayer().drift(1);
-	  }
+	  getPlayer().drift(-1);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	  getPlayer().drift(1);
+	cameraPosition = cameraPosition * FixedPoint<-3>(7) + getPlayer().getPosition()  * FixedPoint<-3>(1);
       }
     if (!std::holds_alternative<Pause>(state))
       {

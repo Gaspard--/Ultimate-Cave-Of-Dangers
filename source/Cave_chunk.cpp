@@ -38,7 +38,7 @@ void CaveChunk::init(CaveChunk const &previous) noexcept
 	++lowPos[1];
       while (previous.getTile({0, lowPos[1] + thickness}).type != TileType::Wall)
 	++thickness;
-      pos[0] += 1;
+      pos[0] -= 1;
       break;
     case ExitDirection::Up:
       lowPos[0] = 0;
@@ -51,7 +51,7 @@ void CaveChunk::init(CaveChunk const &previous) noexcept
       break;
     case ExitDirection::Right:
       lowPos[0] = 0;
-      pos[0] -= 1;
+      pos[0] += 1;
       while (previous.getTile({CHUNK_SIZE - 1, lowPos[1]}).type == TileType::Wall)
 	++lowPos[1];
       while (previous.getTile({CHUNK_SIZE - 1, lowPos[1] + thickness}).type != TileType::Wall)
