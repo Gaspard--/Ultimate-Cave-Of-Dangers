@@ -19,7 +19,7 @@ namespace logic
     Vect<FixedPoint<-16, int>, 2u> delta(speed);
     auto minBound([this](size_t dir)
     {
-      return FixedPoint<-24, int>((FixedPoint<-8>::One - FixedPoint<-8>((position[dir] + size[dir]) % FixedPoint<-8>::One)) % FixedPoint<-8>::One);
+      return FixedPoint<-24, int>((FixedPoint<-8>::One - ((position[dir] + size[dir]) % FixedPoint<-8>::One)) % FixedPoint<-8>::One);
     });
     auto maxBound([this](size_t dir)
     {
@@ -66,7 +66,7 @@ namespace logic
 	      {
 		if (logic.getMap().getTile({x, y}).isSolid())
 		  {
-		    onWall[!delta[0].isPositive()] = 10;
+		    onWall[!delta[0].isPositive()] = 20;
 		    delta[0] = FixedPoint<-16>::Zero;
 		    speed[0] = FixedPoint<-16>::Zero;
 		    goto outX;
@@ -128,14 +128,14 @@ namespace logic
 
   void Entity::drift(int dir) noexcept
   {
-    speed[0] += FixedPoint<-10, int>{dir};
+    speed[0] += FixedPoint<-10, int>{dir * 2};
   }
 
   void Entity::dash(int dir) noexcept
   {
     if (grounded && speed[0].isPositive() - speed[0].isNegative() != dir)
       {
-	speed[0] += FixedPoint<-8, int>{dir * 8};
+	speed[0] += FixedPoint<-8, int>{dir * 16};
 	speed[1] += FixedPoint<-8, int>{4};
       }
   }

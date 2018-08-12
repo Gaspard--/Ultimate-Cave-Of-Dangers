@@ -1,5 +1,7 @@
 #include "Cave_map.hpp"
 
+size_t CaveMap::lastUsedChunk = 0;
+
 CaveMap::CaveMap()
   : firstChunk(1)
 {
@@ -24,22 +26,31 @@ CaveChunk const &CaveMap::getChunk(size_t index) const noexcept
   return chunks[(firstChunk + index) % chunks.size()];
 }
 
-Tile &CaveMap::getTile(Vect<unsigned int, 2> position) noexcept
+Tile &CaveMap::getTile(Vect<unsigned int, 2> position, size_t &lastUsedChunk) noexcept
 {
   Vect<unsigned int, 2> chunkPos(position / CHUNK_SIZE);
   Vect<unsigned int, 2> relativePos(position % CHUNK_SIZE);
 
-  for (CaveChunk &chunk : chunks)
+  {
+    CaveChunk &chunk(chunks[lastUsedChunk]);
+    if (!(chunk.getPos() - chunkPos).any())
+      {
+	return chunk.getTile(relativePos);
+      }
+  }
+  for (size_t i(0u); i < chunks.size(); ++i)
     {
+      CaveChunk &chunk(chunks[i]);
       if (!(chunk.getPos() - chunkPos).any())
 	{
+	  lastUsedChunk = i;
 	  return chunk.getTile(relativePos);
 	}
     }
   return outOfBounds;
 }
 
-Tile const &CaveMap::getTile(Vect<unsigned int, 2> position) const noexcept
+Tile const &CaveMap::getTile(Vect<unsigned int, 2> position, size_t &lastUsedChunk) const noexcept
 {
-  return const_cast<CaveMap &>(*this).getTile(position);
+  return const_cast<CaveMap &>(*this).getTile(position, lastUsedChunk);
 }

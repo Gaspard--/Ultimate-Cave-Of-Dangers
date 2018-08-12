@@ -12,6 +12,7 @@ private:
   size_t firstChunk;
   Tile outOfBounds;
 
+  static size_t lastUsedChunk;
 public:
   CaveMap();
   void genNextChunk();
@@ -19,6 +20,6 @@ public:
   CaveChunk &getChunk(size_t index) noexcept;
   CaveChunk const &getChunk(size_t index) const noexcept;
 
-  Tile &getTile(Vect<unsigned int, 2> position) noexcept;
-  Tile const &getTile(Vect<unsigned int, 2> position) const noexcept;
+  Tile &getTile(Vect<unsigned int, 2> position, size_t & = lastUsedChunk) noexcept;
+  Tile const &getTile(Vect<unsigned int, 2> position, size_t & = lastUsedChunk) const noexcept;
 };
