@@ -16,11 +16,11 @@ namespace logic
   {
     return check(sf::Keyboard::Key::Q) || check(sf::Keyboard::Key::A) || check(sf::Keyboard::Key::Left);
   }
-		    
+
   Logic::Logic()
     : state(Playing{})
   {
-    entities.push_back(disp::TextureList::BOB);
+    entities.push_back({disp::TextureList::BOB, 20});
   }
 
   Entity &Logic::getPlayer() noexcept

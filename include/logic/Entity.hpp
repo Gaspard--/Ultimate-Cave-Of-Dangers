@@ -21,8 +21,10 @@ namespace logic
     unsigned int grounded;
     Vect<unsigned int, 2u> onWall;
     disp::TextureList texture;
+
+    Vect<unsigned, 2u> hps;
   public:
-    Entity(disp::TextureList);
+    Entity(disp::TextureList, unsigned maxHps = 0);
 
     void updatePosition(Logic &);
     void update(Logic &);
@@ -30,6 +32,9 @@ namespace logic
     void drift(int dir) noexcept;
     void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
+
+    Vect<unsigned, 2u> const& getHps() const noexcept;
+    Vect<unsigned, 2u>& getHps() noexcept;
 
     disp::TextureList const & getTexture() const noexcept
     {

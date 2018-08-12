@@ -4,11 +4,12 @@
 namespace logic
 {
 
-  Entity::Entity(disp::TextureList texture)
+  Entity::Entity(disp::TextureList texture, unsigned maxHps)
     : position(FixedPoint<0>(1), FixedPoint<0>(2))
     , size(FixedPoint<0>(1), FixedPoint<0>(2))
     , grounded(0)
     , texture(texture)
+    , hps({maxHps, maxHps})
   {
   }
 
@@ -97,7 +98,7 @@ namespace logic
 	  outY:
 	    ;
 	  }
-      }    
+      }
   }
 
   void Entity::update(Logic &logic)
@@ -142,6 +143,19 @@ namespace logic
 
   bool Entity::shouldBeRemoved() const noexcept
   {
+    if (hps[1] && !hps[0])
+      return true;
     return false;
   }
+
+  Vect<unsigned, 2u> const& Entity::getHps() const noexcept
+  {
+    return hps;
+  }
+
+  Vect<unsigned, 2u>& Entity::getHps() noexcept
+  {
+    return hps;
+  }
+
 }

@@ -40,7 +40,7 @@ namespace disp
     return (window.isOpen());
   }
 
-  void Display::renderSprite(sf::Texture const &texture, Vect<float, 2u> position, float rotation, Vect<float, 2u> size, Vect<int, 2u> repeat) noexcept
+  Vect<float, 2u> Display::renderSprite(sf::Texture const &texture, Vect<float, 2u> position, float rotation, Vect<float, 2u> size, Vect<int, 2u> repeat) noexcept
   {
     sf::Sprite sprite;
 
@@ -55,6 +55,7 @@ namespace disp
     position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
     sprite.setPosition(position[0], position[1]);
     window.draw(sprite);
+    return (position);
   }
 
   void Display::renderMap(CaveMap const &map)
@@ -133,16 +134,31 @@ namespace disp
 
   void Display::renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end)
   {
-    for (auto entity = begin ; entity != end ; ++entity)
-      renderSprite(textures[entity->getTexture()],
-		   camera.apply(Vect<float, 2u>::fromFixedPoint(entity->getPosition())), 0.0f,
-		   {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()});
+    for (auto entity = begin ; entity != end ; ++entity) {
+      Vect<unsigned, 2u> const &hps = entity->getHps();
+      Vect<float, 2u> position = renderSprite(textures[entity->getTexture()],
+					      camera.apply(Vect<float, 2u>::fromFixedPoint(entity->getPosition())), 0.0f,
+					      {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()});
+      if (hps[1]) {
+	sf::RectangleShape hpBar({camera.zoom[0] * float(window.getSize().x) * entity->getSize()[0].getFloatValue(), 5.f});
+	sf::RectangleShape damageBar({hpBar.getSize().x * float(hps[1] - hps[0]) / float(hps[1]), hpBar.getSize().y});
+	damageBar.setFillColor(sf::Color(255, 0, 0));
+	hpBar.setFillColor(sf::Color(0, 255, 0));
+	hpBar.setOrigin(hpBar.getSize().x / 2, hpBar.getSize().y / 2);
+	position[1] -= camera.zoom[1] * float(window.getSize().y) * entity->getSize()[1].getFloatValue() * 0.6f;
+	hpBar.setPosition(position[0], position[1]);
+	damageBar.setPosition(position[0] + hpBar.getSize().x - damageBar.getSize().x - hpBar.getSize().x / 2, position[1] - hpBar.getSize().y / 2);
+	window.draw(hpBar);
+	if (hps[0] != hps[1])
+	  window.draw(damageBar);
+      }
+    }
   }
 
   void Display::renderParalax(Vect<float, 2u> const &movement)
   {
     sf::Texture& texture = textures[TextureList::PARALAX];
-    paralaxPos += movement * Vect<float, 2u>(-2, 2);
+    paralaxPos += movement * Vect<float, 2u>(-2.f, 2.f);
     float textureWidth = static_cast<float>(texture.getSize().x);
     float textureHeight = static_cast<float>(texture.getSize().y);
 
