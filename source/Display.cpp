@@ -108,7 +108,7 @@ namespace disp
 	      {
 		if (wallCount)
 		  {
-		    renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+		    renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 2))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
 		    wallCount = 0;
 		  }
 		renderSprite(textures[textureType], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), rotation);
@@ -116,7 +116,7 @@ namespace disp
 	  } else {
 	    if (wallCount)
 	      {
-		renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
+		renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 2))), 0.0f, {1.0f, 1.0f}, {1, wallCount});
 		wallCount = 0;
 	      }
 	  }
