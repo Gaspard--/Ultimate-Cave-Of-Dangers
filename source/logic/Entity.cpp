@@ -12,13 +12,98 @@ namespace logic
   {
   }
 
-  void Entity::update(Logic &)
+  void Entity::updatePosition(Logic &logic)
   {
-    position += speed;
-    if (!grounded)
+    if (!speed.any())
+      return ;
+    Vect<FixedPoint<-16, int>, 2u> delta(speed);
+    auto minBound([this](size_t dir)
+    {
+      return FixedPoint<-24, int>((FixedPoint<-8>::One - FixedPoint<-8>((position[dir] + size[dir]) % FixedPoint<-8>::One)) % FixedPoint<-8>::One);
+    });
+    auto maxBound([this](size_t dir)
+    {
+      return -FixedPoint<-24, int>(position[dir] % FixedPoint<-8>::One);
+    });
+    auto const TimeTileNextTile([&delta, minBound, maxBound](size_t dir) noexcept
+				{
+				  if (!delta[dir])
+				    return FixedPoint<-8, int>::One;
+				  if (delta[dir].isPositive())
+				    return minBound(dir) / delta[dir];
+				  else
+				    return maxBound(dir) / delta[dir];
+				});
+    auto move([this, &delta, minBound, maxBound](size_t dir)
+	      {
+		auto moveInDir(delta[dir].isPositive() ?
+			       minBound(dir) :
+			       maxBound(dir));
+	        auto moveInOther(moveInDir * delta[!dir] / delta[dir]);
+
+		position[dir] += moveInDir;
+		position[!dir] += moveInOther;
+		delta[dir] -= moveInDir;
+		delta[!dir] -= moveInOther;
+	      });
+    while (delta.any())
       {
-	speed[1] -= FixedPoint<-8, int>{8};
-      }
+	auto timeX(TimeTileNextTile(0));
+	auto timeY(TimeTileNextTile(1));
+
+	if (timeX >= decltype(timeX)::One && timeY >= decltype(timeY)::One)
+	  {
+	    position += delta;
+	    return ;
+	  }
+	if (timeX < timeY)
+	  {
+	    move(0);
+	    unsigned int x(FixedPoint<0>(position[0] + (delta[0].isPositive() ? size[0] : FixedPoint<-8>::Zero)).value - !delta[0].isPositive());
+	    unsigned int minY(FixedPoint<0>(position[1]).value);
+	    unsigned int maxY(FixedPoint<0>(position[1] + size[1]).value + !!((position[1] + size[1]) % FixedPoint<-8, int>::One));
+	    for (unsigned int y(minY); y != maxY; ++y)
+	      {
+		if (logic.getMap().getTile({x, y}).isSolid())
+		  {
+		    onWall[!delta[0].isPositive()] = 10;
+		    delta[0] = FixedPoint<-16>::Zero;
+		    speed[0] = FixedPoint<-16>::Zero;
+		    goto outX;
+		  }
+	      }
+	    position[0] += FixedPoint<-8>{speed[0].isPositive() * 2 - 1};
+	  outX:
+	    ;
+	  }
+	else
+	  {
+	    move(1);
+	    unsigned int y(FixedPoint<0>(position[1] + (delta[1].isPositive() ? size[1] : FixedPoint<-8>::Zero)).value - !delta[1].isPositive());
+	    unsigned int minX(FixedPoint<0>(position[0]).value);
+	    unsigned int maxX(FixedPoint<0>(position[0] + size[0]).value + !!((position[0] + size[0]) % FixedPoint<-8, int>::One));
+	    for (unsigned int x(minX); x != maxX; ++x)
+	      {
+		if (logic.getMap().getTile({x, y}).isSolid())
+		  {
+		    delta[1] = FixedPoint<-16>::Zero;
+		    speed[1] = FixedPoint<-16>::Zero;
+		    if (!speed[1].isPositive())
+		      grounded = 5;
+		    goto outY;
+		  }
+	      }
+	    position[1] += FixedPoint<-8>{speed[1].isPositive() * 2 - 1};
+	  outY:
+	    ;
+	  }
+      }    
+  }
+
+  void Entity::update(Logic &logic)
+  {
+    updatePosition(logic);
+    speed[1] -= FixedPoint<-16, int>{64};
     if (onWall.any())
       {
 	speed[1] *= FixedPoint<-4, int>{15};
@@ -26,33 +111,32 @@ namespace logic
     grounded -= !!grounded;
     onWall -= !!onWall;
     speed *= FixedPoint<-6, int>{63};
-    grounded = 2;
   }
 
   void Entity::jump() noexcept
   {
     if (grounded)
       {
-	speed[1] = FixedPoint<-8, int>{256};
+	speed[1] = FixedPoint<-8, int>{45};
       }
     else if (onWall.any())
       {
-	speed[0] = FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 16};
-	speed[1] = FixedPoint<-8, int>{128};
+	speed[0] = -FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 16};
+	speed[1] = FixedPoint<-8, int>{32};
       }
   }
 
   void Entity::drift(int dir) noexcept
   {
-    speed[0] += FixedPoint<-8, int>{dir};
+    speed[0] += FixedPoint<-10, int>{dir};
   }
 
   void Entity::dash(int dir) noexcept
   {
-    if (grounded)
+    if (grounded && speed[0].isPositive() - speed[0].isNegative() != dir)
       {
 	speed[0] += FixedPoint<-8, int>{dir * 8};
-	speed[1] += FixedPoint<-8, int>{32};
+	speed[1] += FixedPoint<-8, int>{4};
       }
   }
 
