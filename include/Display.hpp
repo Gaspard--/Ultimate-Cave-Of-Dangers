@@ -33,6 +33,7 @@ namespace disp
      BOB,
      WALL,
      PIECE_OF_CORNER,
+     PARALAX,
     };
 
   class	Display
@@ -54,6 +55,9 @@ namespace disp
     void renderSprite(sf::Texture const&, Vect<float, 2u> position, float rotation = 0.0f, Vect<float, 2u> size = {1.0f, 1.0f}, Vect<int, 2u> repeat = {1, 1}) noexcept;
     void renderMap(CaveMap const &);
     void renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end);
+    void renderParalax(Vect<float, 2u> const &movement);
+
+    Vect<float, 2u> paralaxPos;
 
     sf::RenderWindow window;
     std::map<TextureList, sf::Texture> textures;

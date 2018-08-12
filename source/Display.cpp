@@ -16,6 +16,7 @@ namespace disp
     loadTexture(TextureList::BOB, "./resources/bob.png");
     loadTexture(TextureList::WALL, "./resources/wall.png");
     loadTexture(TextureList::PIECE_OF_CORNER, "./resources/piece_of_corner.png");
+    loadTexture(TextureList::PARALAX, "./resources/back.png");
     textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
   }
@@ -138,11 +139,52 @@ namespace disp
 		   {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()});
   }
 
+  void Display::renderParalax(Vect<float, 2u> const &movement)
+  {
+    sf::Texture& texture = textures[TextureList::PARALAX];
+    paralaxPos += movement * Vect<float, 2u>(-2, 2);
+    if (paralaxPos[0] < -1 * static_cast<float>(texture.getSize().x))
+      paralaxPos[0] += texture.getSize().x;
+    else if (paralaxPos[0] >= texture.getSize().x)
+      paralaxPos[0] -= texture.getSize().x;
+    if (paralaxPos[1] < -1 * static_cast<float>(texture.getSize().y))
+      paralaxPos[0] += texture.getSize().y;
+    else if (paralaxPos[1] >= texture.getSize().y)
+      paralaxPos[0] -= texture.getSize().y;
+
+    std::vector<Vect<float, 2u>> allParalaxPos;
+    allParalaxPos.push_back(paralaxPos);
+    if (paralaxPos[0] < 0)
+      allParalaxPos.push_back({paralaxPos[0] + texture.getSize().x, paralaxPos[1]});
+    if (paralaxPos[0] > 0)
+      allParalaxPos.push_back({paralaxPos[0] - texture.getSize().x, paralaxPos[1]});
+    if (paralaxPos[1] < 0)
+      allParalaxPos.push_back({paralaxPos[0], paralaxPos[1] + texture.getSize().y});
+    if (paralaxPos[1] > 0)
+      allParalaxPos.push_back({paralaxPos[0], paralaxPos[1] - texture.getSize().y});
+    if (paralaxPos[0] < 0 && paralaxPos[1] < 0)
+      allParalaxPos.push_back({paralaxPos[0] + texture.getSize().x, paralaxPos[1] + texture.getSize().y});
+    if (paralaxPos[0] < 0 && paralaxPos[1] > 0)
+      allParalaxPos.push_back({paralaxPos[0] + texture.getSize().x, paralaxPos[1] - texture.getSize().y});
+    if (paralaxPos[0] > 0 && paralaxPos[1] < 0)
+      allParalaxPos.push_back({paralaxPos[0] - texture.getSize().x, paralaxPos[1] + texture.getSize().y});
+    if (paralaxPos[0] > 0 && paralaxPos[1] > 0)
+      allParalaxPos.push_back({paralaxPos[0] - texture.getSize().x, paralaxPos[1] - texture.getSize().y});
+    for (auto i = allParalaxPos.begin() ; i != allParalaxPos.end() ; ++i)
+      {
+	sf::Sprite sprite(textures[TextureList::PARALAX]);
+	sprite.setPosition((*i)[0], (*i)[1]);
+	window.draw(sprite);
+      }
+  }
+
   void Display::render(logic::Logic const &logic)
   {
     window.clear();
+    Vect<float, 2u> oldCameraPos = camera.offset;
     camera.offset = Vect<float, 2u>::fromFixedPoint(logic.getCameraPosition());
     camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
+    renderParalax(camera.offset - oldCameraPos);
     renderMap(logic.getMap());
     renderEntities(logic.getEntities().begin(), logic.getEntities().end());
     window.display();
