@@ -59,45 +59,46 @@ namespace disp
     unsigned const minY(unsigned(camera.offset[1] - 0.5f / camera.zoom[1]) - 1);
     unsigned const maxX(unsigned(camera.offset[0] + 0.5f / camera.zoom[0]) + 2);
     unsigned const maxY(unsigned(camera.offset[1] + 0.5f / camera.zoom[1]) + 2);
+    std::vector<std::vector<TileType>> tiles;
+    for (unsigned x = minX - 1; x != maxX + 1 ; ++x) {
+      tiles.push_back(std::vector<TileType>());
+      for (unsigned y = minY - 1; y != maxY + 1; ++y)
+	tiles[x - (minX - 1)].push_back(map.getTile(Vect<unsigned, 2u>(x, y)).type);
+    }
 
-    for (unsigned x = minX ; x != maxX ; ++x)
-      for (unsigned y = minY; y != maxY; ++y)
+    for (unsigned x = 1 ; x != maxX - minX + 1; ++x)
+      for (unsigned y = 1 ; y != maxY - minY + 1; ++y)
 	{
-	  if (map.getTile(Vect<unsigned, 2u>(x, y)).type == TileType::Wall) {
+	  if (tiles[x][y] == TileType::Wall) {
 	    float rotation = 0.0f;
 	    TextureList textureType = TextureList::CAVE_TILE;
-	    unsigned tileSum = (map.getTile(Vect<unsigned, 2u>(x - 1, y)).type != TileType::Wall)
-	      + (map.getTile(Vect<unsigned, 2u>(x + 1, y)).type != TileType::Wall)
-	      + (map.getTile(Vect<unsigned, 2u>(x, y - 1)).type != TileType::Wall)
-	      + (map.getTile(Vect<unsigned, 2u>(x, y + 1)).type != TileType::Wall);
+	    unsigned tileSum = (tiles[x - 1][y] != TileType::Wall) + (tiles[x + 1][y] != TileType::Wall)
+	      + (tiles[x][y - 1] != TileType::Wall) + (tiles[x][y + 1] != TileType::Wall);
 	    if (!tileSum) {
-	      if (map.getTile(Vect<unsigned, 2u>(x + 1, y + 1)).type != TileType::Wall ||
-		  map.getTile(Vect<unsigned, 2u>(x - 1, y - 1)).type != TileType::Wall ||
-		  map.getTile(Vect<unsigned, 2u>(x - 1, y + 1)).type != TileType::Wall ||
-		  map.getTile(Vect<unsigned, 2u>(x + 1, y - 1)).type != TileType::Wall) {
+	      if (tiles[x + 1][y + 1] != TileType::Wall ||
+		  tiles[x - 1][y - 1] != TileType::Wall ||
+		  tiles[x - 1][y + 1] != TileType::Wall ||
+		  tiles[x + 1][y - 1] != TileType::Wall) {
 		textureType = TextureList::PIECE_OF_CORNER;
-		rotation = (map.getTile(Vect<unsigned, 2u>(x + 1, y - 1)).type != TileType::Wall) * 180.0f
-		  + (map.getTile(Vect<unsigned, 2u>(x - 1, y - 1)).type != TileType::Wall) * 270.0f
-		  + (map.getTile(Vect<unsigned, 2u>(x + 1, y + 1)).type != TileType::Wall) * 90.0f;
+		rotation = (tiles[x + 1][y - 1] != TileType::Wall) * 180.0f
+		  + (tiles[x - 1][y - 1] != TileType::Wall) * 270.0f
+		  + (tiles[x + 1][y + 1] != TileType::Wall) * 90.0f;
 	      }
 	      else
 		textureType = TextureList::WALL;
 	    }
 	    else if (tileSum == 1) {
 	      textureType = TextureList::SIDE;
-	      rotation = (map.getTile(Vect<unsigned, 2u>(x + 1, y)).type != TileType::Wall) * 180.0f
-		+ (map.getTile(Vect<unsigned, 2u>(x, y - 1)).type != TileType::Wall) * 270.0f
-		+ (map.getTile(Vect<unsigned, 2u>(x, y + 1)).type != TileType::Wall) * 90.0f;
+	      rotation = (tiles[x + 1][y] != TileType::Wall) * 180.0f
+		+ (tiles[x][y - 1] != TileType::Wall) * 270.0f
+		+ (tiles[x][y + 1] != TileType::Wall) * 90.0f;
 	    } else {
 	      textureType = TextureList::CORNER;
-	      rotation = (float(map.getTile(Vect<unsigned, 2u>(x + 1, y)).type != TileType::Wall)
-			  * float(map.getTile(Vect<unsigned, 2u>(x, y + 1)).type != TileType::Wall)) * 90.0f
-		+ (float(map.getTile(Vect<unsigned, 2u>(x + 1, y)).type != TileType::Wall)
-		   * float(map.getTile(Vect<unsigned, 2u>(x, y - 1)).type != TileType::Wall)) * 180.0f
-		+ (float(map.getTile(Vect<unsigned, 2u>(x - 1, y)).type != TileType::Wall)
-		   * float(map.getTile(Vect<unsigned, 2u>(x, y - 1)).type != TileType::Wall)) * 270.0f;
+	      rotation = (float(tiles[x + 1][y] != TileType::Wall) * float(tiles[x][y + 1] != TileType::Wall)) * 90.0f
+		+ (float(tiles[x + 1][y] != TileType::Wall) * float(tiles[x][y - 1] != TileType::Wall)) * 180.0f
+		+ (float(tiles[x - 1][y] != TileType::Wall) * float(tiles[x][y - 1] != TileType::Wall)) * 270.0f;
 	    }
-	    renderSprite(textures[textureType], camera.apply(Vect<int, 2u>(int(x), int(y))), rotation);
+	    renderSprite(textures[textureType], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), rotation);
 	  }
 	}
   }
