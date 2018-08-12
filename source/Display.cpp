@@ -45,12 +45,13 @@ namespace disp
 
     sprite.setTexture(texture);
     sprite.setOrigin(float(texture.getSize().x) / 2, float(texture.getSize().y) / 2);
-    sprite.setRotation(rotation);
+    if (rotation)
+      sprite.setRotation(rotation);
     sprite.setScale(camera.zoom[0] * float(window.getSize().x) / float(texture.getSize().x) * size[0],
 		    camera.zoom[1] * float(window.getSize().y) / float(texture.getSize().y) * size[1]);
     sprite.setTextureRect({0, 0, texture.getSize().x * repeat[0], texture.getSize().y * repeat[1]});
+    position += Vect<float, 2u>(0.5, -0.5);
     position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
-    position += Vect<float, 2u>(float(window.getSize().x), float(window.getSize().y)) * 0.5f;
     sprite.setPosition(position[0], position[1]);
     window.draw(sprite);
   }
