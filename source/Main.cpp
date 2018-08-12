@@ -9,6 +9,7 @@ int main()
   logic::Logic logic;
   sf::RenderWindow& window = display.getWindow();
 
+  sf::Clock clock;
   while (display.isRunning())
     {
       sf::Event e;
@@ -20,6 +21,9 @@ int main()
       }
       logic.update();
       display.render(logic);
+      float currentTime = clock.restart().asSeconds();
+      float fps = 1.f / currentTime;
+      std::cerr << "Current nbr of FPS : " << fps << std::endl;
     }
   } catch (std::exception& e) {
     std::cerr << "Error : " << e.what() << std::endl;
