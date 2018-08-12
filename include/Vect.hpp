@@ -193,7 +193,7 @@ public:
     return ((*this * other).sum());
   }
 
-  constexpr T length2() const
+  constexpr auto length2() const
   {
     return ((*this * *this).sum());
   }
