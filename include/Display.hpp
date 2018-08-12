@@ -65,7 +65,9 @@ namespace disp
     sf::RenderWindow window;
     std::map<TextureList, sf::Texture> textures;
     Camera camera;
-
+    glBuffer waterBuffer;
+    Program waterProg;
+    Vao waterVao;
   };
 }
 

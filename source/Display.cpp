@@ -1,12 +1,37 @@
+#include <sstream>
+#include <fstream>
+
 #include "Display.hpp"
 #include "logic/Logic.hpp"
 
 namespace disp
 {
-  Display::Display():
-    window(sf::VideoMode(1920, 1080), "Ultime Cave of Dangers")
+  inline Program contextFromFiles(std::string name)
+  {
+    std::stringstream vert;
+    std::stringstream frag;
+    std::ifstream vertInput("shaders/" + name + ".vert");
+    std::ifstream fragInput("shaders/" + name + ".frag");
+
+    if (!fragInput || !vertInput)
+      {
+	std::cout << "shaders/" + name + ".vert not found!" << std::endl;
+	std::cout << "shaders/" + name + ".frag not found!" << std::endl;
+	throw std::runtime_error("Exiting dur to previous error");
+      }
+    vert << vertInput.rdbuf();
+    frag << fragInput.rdbuf();
+    return my_opengl::createProgram<2>({static_cast<unsigned int>(GL_VERTEX_SHADER), static_cast<unsigned int>(GL_FRAGMENT_SHADER)},
+				       {vert.str(), frag.str()});
+  }
+
+  Display::Display()
+    : window(sf::VideoMode(1920, 1080), "Ultime Cave of Dangers")
+    , waterProg(contextFromFiles("water"))
   {
     /* load all textures here */
+    window.resetGLStates();
+
     loadTexture(TextureList::LEGACY, "./resources/planet.bmp");
     loadTexture(TextureList::CAVE_TILE, "./resources/cave_tile.png");
     loadTexture(TextureList::MINEKART, "./resources/minekart.png");
@@ -20,6 +45,19 @@ namespace disp
     loadTexture(TextureList::PARALAX, "./resources/back.png");
     textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
+    {
+      glBindVertexArray(waterVao);
+      glUseProgram(waterProg);
+
+      glBindBuffer(GL_ARRAY_BUFFER, waterBuffer);
+      glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_STATIC_DRAW);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 2, GL_FLOAT, false, 4 * sizeof(float), nullptr);
+      glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * sizeof(float), reinterpret_cast<void *>(2u * sizeof(float)));
+
+      glBindVertexArray(0);
+      glUseProgram(0);
+    }
   }
 
   Display::~Display()
@@ -219,24 +257,41 @@ namespace disp
 		    {1.0f, -1.0f},
 		      {1.0f, 1.0f}}})
 	  {
-	    auto position(camera.apply(Vect<float, 2u>{it->position[0].getFloatValue(), it->position[1].getFloatValue()}));
+	    auto position(camera.apply(Vect<float, 2u>{it->position[0].getFloatValue() + corner[0] * logic::WaterDropSize.getFloatValue(),
+						       it->position[1].getFloatValue() + corner[1] * logic::WaterDropSize.getFloatValue()}));
 	    for (uint32_t dir(0u); dir != 2; ++dir)
-	      ++dest = position[dir] - corner[dir] * logic::WaterDropSize.getFloatValue();
+	      ++dest = position[dir];
 	    for (uint32_t dir(0u); dir != 2; ++dir)
 	      ++dest = corner[dir];
 	  }
       }
-    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, GLsizei(std::distance(begin, end) * 4));
+    {
+      glBindVertexArray(waterVao);
+      glUseProgram(waterProg);
+
+      glBindBuffer(GL_ARRAY_BUFFER, waterBuffer);
+      glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
+      glDrawArrays(GL_TRIANGLES, 0, GLsizei(std::distance(begin, end) * 6));
+
+      glUseProgram(0);
+      glBindVertexArray(0);
+    }
   }
 
   void Display::render(logic::Logic const &logic)
   {
-    //renderWater(logic.getWaterDrops().begin(), logic.getWaterDrops().end());
-    window.clear();
     Vect<float, 2u> oldCameraPos = camera.offset;
+
     camera.offset = Vect<float, 2u>::fromFixedPoint(logic.getCameraPosition());
     camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
+
+    window.resetGLStates();
+    window.clear();
+
+    renderWater(logic.getWaterDrops().begin(), logic.getWaterDrops().end());
+
+    window.resetGLStates();
+
     renderParalax(camera.offset - oldCameraPos);
     renderMap(logic.getMap());
     renderEntities(logic.getEntities().begin(), logic.getEntities().end());

@@ -24,16 +24,16 @@ private:
   {}
 
   template<class func_type, std::size_t... indices>
-  static auto apply_op(func_type &&func, std::index_sequence<indices...>)
+  static auto applyOp(func_type &&func, std::index_sequence<indices...>)
   {
     return Vect{func(indices)...};
   }
 
 public:
   template<class func_type>
-  static Vect<T, dim> apply_op(func_type &&func)
+  static Vect<T, dim> applyOp(func_type &&func)
   {
-    return apply_op(func, std::make_index_sequence<dim>{});
+    return applyOp(func, std::make_index_sequence<dim>{});
   }
 
   template<class V>

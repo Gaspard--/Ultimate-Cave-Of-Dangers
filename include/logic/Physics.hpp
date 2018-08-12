@@ -13,7 +13,7 @@ namespace logic
 
     if (!!length2 && length2 < WaterDropSize * WaterDropSize)
       {
-	length2 = std::min(length2, FixedPoint<-16, int>(WaterDropSize * WaterDropSize * FixedPoint<-2>(1)));
+	length2 = std::max(length2, FixedPoint<-16, int>(WaterDropSize * WaterDropSize * FixedPoint<-2>(1)));
 	auto scale(FixedPoint<-8, int>(1) * FixedPoint<-8, int>::One);
 	
 	Vect<decltype(scale * (distance[0]) / length2), 2u> diff(scale * distance[0] / length2,

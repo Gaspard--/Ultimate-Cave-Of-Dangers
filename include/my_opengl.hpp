@@ -3,7 +3,7 @@
 
 # include <string>
 # include "GL/gl3w.h"
-# include <GLFW/glfw3.h>
+# include <SFML/OpenGL.hpp>
 # include "Vect.hpp"
 
 class Shader
