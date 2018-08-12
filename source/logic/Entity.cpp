@@ -103,7 +103,7 @@ namespace logic
   void Entity::update(Logic &logic)
   {
     updatePosition(logic);
-    speed[1] -= FixedPoint<-16, int>{64};
+    speed[1] -= FixedPoint<-8, int>{3};
     if (onWall.any())
       {
 	speed[1] *= FixedPoint<-4, int>{15};
@@ -117,25 +117,25 @@ namespace logic
   {
     if (grounded)
       {
-	speed[1] = FixedPoint<-8, int>{45};
+	speed[1] = FixedPoint<-8, int>{120};
       }
     else if (onWall.any())
       {
-	speed[0] = -FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 32};
-	speed[1] = FixedPoint<-8, int>{45};
+	speed[0] = -FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 128};
+	speed[1] = FixedPoint<-8, int>{120};
       }
   }
 
   void Entity::drift(int dir) noexcept
   {
-    speed[0] += FixedPoint<-10, int>{dir * 2};
+    speed[0] += FixedPoint<-10, int>{dir * 32};
   }
 
   void Entity::dash(int dir) noexcept
   {
     if (grounded && speed[0].isPositive() - speed[0].isNegative() != dir)
       {
-	speed[0] += FixedPoint<-8, int>{dir * 16};
+	speed[0] += FixedPoint<-8, int>{dir * 48};
 	speed[1] += FixedPoint<-8, int>{4};
       }
   }

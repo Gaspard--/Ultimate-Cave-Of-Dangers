@@ -48,6 +48,7 @@ namespace logic
 				      {
 					return entity.shouldBeRemoved();
 				      }), entities.end());
+	
       }
   }
 
