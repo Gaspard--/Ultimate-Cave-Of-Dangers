@@ -7,13 +7,15 @@
 # include <stdexcept>
 # include <vector>
 
-# include "logic/Logic.hpp"
+# include "Vect.hpp"
 # include "Camera.hpp"
+# include "my_opengl.hpp"
 
 namespace logic
 {
   class Logic;
   class Entity;
+  struct WaterDrop;
 }
 
 class CaveMap;
@@ -54,6 +56,7 @@ namespace disp
     void loadTexture(TextureList, std::string);
     void renderSprite(sf::Texture const&, Vect<float, 2u> position, float rotation = 0.0f, Vect<float, 2u> size = {1.0f, 1.0f}, Vect<int, 2u> repeat = {1, 1}) noexcept;
     void renderMap(CaveMap const &);
+    void renderWater(std::vector<logic::WaterDrop>::const_iterator const &begin, std::vector<logic::WaterDrop>::const_iterator const &end);
     void renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end);
     void renderParalax(Vect<float, 2u> const &movement);
 

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project(Ultimate-Cave-Of-Dangers)
 
+execute_process(COMMAND python2.7 gl3w_gen.py WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 
 set(HEADER_DIRECTORY "include")
@@ -54,5 +56,9 @@ else()
 			sfml-window
   )
 endif(WIN32)
+
+find_package(OpenGL REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} dl)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
