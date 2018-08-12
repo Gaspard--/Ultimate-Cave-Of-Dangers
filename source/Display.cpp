@@ -17,6 +17,7 @@ namespace disp
     loadTexture(TextureList::WALL, "./resources/wall.png");
     loadTexture(TextureList::PIECE_OF_CORNER, "./resources/piece_of_corner.png");
     camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
+    window.setVerticalSyncEnabled(true);
   }
 
   Display::~Display()
