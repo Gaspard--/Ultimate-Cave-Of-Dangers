@@ -143,33 +143,36 @@ namespace disp
   {
     sf::Texture& texture = textures[TextureList::PARALAX];
     paralaxPos += movement * Vect<float, 2u>(-2, 2);
-    if (paralaxPos[0] < -1 * static_cast<float>(texture.getSize().x))
-      paralaxPos[0] += texture.getSize().x;
-    else if (paralaxPos[0] >= texture.getSize().x)
-      paralaxPos[0] -= texture.getSize().x;
-    if (paralaxPos[1] < -1 * static_cast<float>(texture.getSize().y))
-      paralaxPos[0] += texture.getSize().y;
-    else if (paralaxPos[1] >= texture.getSize().y)
-      paralaxPos[0] -= texture.getSize().y;
+    float textureWidth = static_cast<float>(texture.getSize().x);
+    float textureHeight = static_cast<float>(texture.getSize().y);
+
+    if (paralaxPos[0] < -1 * textureWidth)
+      paralaxPos[0] += textureWidth;
+    else if (paralaxPos[0] >= textureWidth)
+      paralaxPos[0] -= textureWidth;
+    if (paralaxPos[1] < -1 * textureHeight)
+      paralaxPos[0] += textureHeight;
+    else if (paralaxPos[1] >= textureHeight)
+      paralaxPos[0] -= textureHeight;
 
     std::vector<Vect<float, 2u>> allParalaxPos;
     allParalaxPos.push_back(paralaxPos);
     if (paralaxPos[0] < 0)
-      allParalaxPos.push_back({paralaxPos[0] + texture.getSize().x, paralaxPos[1]});
+      allParalaxPos.push_back({paralaxPos[0] + textureWidth, paralaxPos[1]});
     if (paralaxPos[0] > 0)
-      allParalaxPos.push_back({paralaxPos[0] - texture.getSize().x, paralaxPos[1]});
+      allParalaxPos.push_back({paralaxPos[0] - textureWidth, paralaxPos[1]});
     if (paralaxPos[1] < 0)
-      allParalaxPos.push_back({paralaxPos[0], paralaxPos[1] + texture.getSize().y});
+      allParalaxPos.push_back({paralaxPos[0], paralaxPos[1] + textureHeight});
     if (paralaxPos[1] > 0)
-      allParalaxPos.push_back({paralaxPos[0], paralaxPos[1] - texture.getSize().y});
+      allParalaxPos.push_back({paralaxPos[0], paralaxPos[1] - textureHeight});
     if (paralaxPos[0] < 0 && paralaxPos[1] < 0)
-      allParalaxPos.push_back({paralaxPos[0] + texture.getSize().x, paralaxPos[1] + texture.getSize().y});
+      allParalaxPos.push_back({paralaxPos[0] + textureWidth, paralaxPos[1] + textureHeight});
     if (paralaxPos[0] < 0 && paralaxPos[1] > 0)
-      allParalaxPos.push_back({paralaxPos[0] + texture.getSize().x, paralaxPos[1] - texture.getSize().y});
+      allParalaxPos.push_back({paralaxPos[0] + textureWidth, paralaxPos[1] - textureHeight});
     if (paralaxPos[0] > 0 && paralaxPos[1] < 0)
-      allParalaxPos.push_back({paralaxPos[0] - texture.getSize().x, paralaxPos[1] + texture.getSize().y});
+      allParalaxPos.push_back({paralaxPos[0] - textureWidth, paralaxPos[1] + textureHeight});
     if (paralaxPos[0] > 0 && paralaxPos[1] > 0)
-      allParalaxPos.push_back({paralaxPos[0] - texture.getSize().x, paralaxPos[1] - texture.getSize().y});
+      allParalaxPos.push_back({paralaxPos[0] - textureWidth, paralaxPos[1] - textureHeight});
     for (auto i = allParalaxPos.begin() ; i != allParalaxPos.end() ; ++i)
       {
 	sf::Sprite sprite(textures[TextureList::PARALAX]);
