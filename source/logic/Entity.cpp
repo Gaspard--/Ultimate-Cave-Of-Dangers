@@ -121,8 +121,8 @@ namespace logic
       }
     else if (onWall.any())
       {
-	speed[0] = -FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 16};
-	speed[1] = FixedPoint<-8, int>{32};
+	speed[0] = -FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 32};
+	speed[1] = FixedPoint<-8, int>{45};
       }
   }
 
