@@ -174,12 +174,12 @@ namespace logic
     return false;
   }
 
-  Vect<unsigned, 2u> const& Entity::getHps() const noexcept
+  Vect<int, 2u> const& Entity::getHps() const noexcept
   {
     return hps;
   }
 
-  Vect<unsigned, 2u>& Entity::getHps() noexcept
+  Vect<int, 2u>& Entity::getHps() noexcept
   {
     return hps;
   }
