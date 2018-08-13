@@ -37,6 +37,7 @@ namespace disp
      PARALAX,
      ZOMBIE,
      WAVE,
+     BOARD,
     };
 
   class	Display
