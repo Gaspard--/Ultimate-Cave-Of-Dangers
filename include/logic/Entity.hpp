@@ -34,7 +34,7 @@ namespace logic
     void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
 
-    Vect<FixedPoint<-16, int>, 2u> const& getspeed() const noexcept;
+    Vect<FixedPoint<-16, int>, 2u> const& getSpeed() const noexcept;
     sf::Clock const& getTimer() const noexcept;
 
     Vect<unsigned, 2u> const& getHps() const noexcept;

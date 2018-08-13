@@ -156,14 +156,14 @@ namespace disp
     for (auto entity = begin ; entity != end ; ++entity) {
       Vect<unsigned, 2u> const &hps = entity->getHps();
       unsigned animFrame = 2;
-      if (entity->getspeed()[0].getFloatValue() > 0.05f) {
+      if (entity->getSpeed()[0].getFloatValue() > 0.05f) {
 	animFrame = 4;
-	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
+	if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 3 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
       }
-      else if (entity->getspeed()[0].getFloatValue() < -0.05f) {
+      else if (entity->getSpeed()[0].getFloatValue() < -0.05f) {
 	animFrame = 1;
-	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
+	if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 0 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
       }
       Vect<float, 2u> position = renderSprite(textures[entity->getTexture()],

@@ -13,7 +13,7 @@ namespace logic
   {
   }
 
-  Vect<FixedPoint<-16, int>, 2u> const& Entity::getspeed() const noexcept
+  Vect<FixedPoint<-16, int>, 2u> const& Entity::getSpeed() const noexcept
   {
     return (speed);
   }

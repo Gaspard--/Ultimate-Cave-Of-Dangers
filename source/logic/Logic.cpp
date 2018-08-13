@@ -56,6 +56,22 @@ namespace logic
 	    }))
 	  getPlayer().drift(-1);
 	cameraPosition = (cameraPosition * 7_uFP + getPlayer().getPosition() * 1_uFP) / 8_uFP;
+	for (auto it(entities.begin() + 1); it < entities.end(); ++it)
+	  {
+	    Entity &entity(*it);
+	    int dir(entity.getSpeed()[0].isPositive() * 2 - 1);
+	    FixedPoint<0> nextX((FixedPoint<0>(entity.getPosition()[0] + FixedPoint<-8, int>(entity.getSpeed()[0]) * 5_FP) + FixedPoint<0>(entity.getSpeed()[0].isPositive())).value);
+
+	    if (!caveMap.getTile({nextX.value, FixedPoint<0>(entity.getPosition()[1]).value}).isSolid() && // turn around if running into a wall
+		caveMap.getTile({nextX.value, (FixedPoint<0>(entity.getPosition()[1]) - 1_uFP).value}).isSolidAbove()) // turn around if about to fall
+	      {
+		entity.drift(dir);
+	      }
+	    else
+	      {
+		entity.dash(-dir);
+	      }
+	  }
       }
     if (!std::holds_alternative<Pause>(state))
       {
