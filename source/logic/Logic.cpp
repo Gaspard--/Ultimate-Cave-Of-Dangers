@@ -59,9 +59,9 @@ namespace logic
       }
     if (!std::holds_alternative<Pause>(state))
       {
-	waterLevel += FixedPoint<-8>{12u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
+	waterLevel += FixedPoint<-8>{8u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
 	if (waterLevel < getPlayer().getPosition()[1])
-	  waterLevel += ((getPlayer().getPosition()[1] - waterLevel) * 1_uFP / 64_uFP);
+	  waterLevel += ((getPlayer().getPosition()[1] - waterLevel) * 1_uFP / 128_uFP);
 	std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
 	for (Entity &entity : entities)
 	  entity.update(*this);
@@ -84,7 +84,7 @@ namespace logic
 					    entity.getPosition()[1] > min[1] &&
 					    entity.getPosition()[0] > max[0] &&
 					    entity.getPosition()[1] > max[1]);
-				  }), entities.end());    
+				  }), entities.end());
   }
 
   void Logic::handleEvent(const sf::Event& e)
