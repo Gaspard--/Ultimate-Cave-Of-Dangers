@@ -201,12 +201,12 @@ namespace disp
 
     if (paralaxPos[0] < -1 * textureWidth)
       paralaxPos[0] += textureWidth;
-    else if (paralaxPos[0] >= textureWidth)
+    while (paralaxPos[0] >= textureWidth)
       paralaxPos[0] -= textureWidth;
-    if (paralaxPos[1] < -1 * textureHeight)
-      paralaxPos[0] += textureHeight;
-    else if (paralaxPos[1] >= textureHeight)
-      paralaxPos[0] -= textureHeight;
+    while (paralaxPos[1] < -1 * textureHeight)
+      paralaxPos[1] += textureHeight;
+    while (paralaxPos[1] >= textureHeight)
+      paralaxPos[1] -= textureHeight;
 
     std::vector<Vect<float, 2u>> allParalaxPos;
     allParalaxPos.push_back(paralaxPos);
