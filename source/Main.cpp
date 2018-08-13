@@ -1,10 +1,15 @@
 # include "Display.hpp"
 # include "logic/Logic.hpp"
 # include <iostream>
+# include <SFML/Audio.hpp>
 
 int main()
 {
   try {
+    sf::Music music;
+    music.openFromFile("resources/LD42_stuck_in_a_cave.wav");
+      music.setLoop(true);
+    music.play();
       disp::Display display;
   logic::Logic logic;
   sf::RenderWindow& window = display.getWindow();
