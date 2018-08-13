@@ -232,14 +232,15 @@ namespace disp
     sf::Texture texture = textures[TextureList::WAVE];
     sf::RectangleShape water({window.getSize().x, window.getSize().y});
     water.setFillColor(sf::Color(0x06207796));
-    waterPos[1] = 350.f;
-    if (waterPos[1] < 0)
+    waterPos = (waterPos - 0.5f) * Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
+    if (waterPos[1] < 0.0f)
       waterPos[1] = 0.f;
-    water.setPosition(0.f, waterPos[1]);
+    water.setPosition(0.0f, waterPos[1]);
     window.draw(water);
 
     if (waterPos[1] > 0)
-      for (waterPos[0] = 0.f ; waterPos[0] < window.getSize().x ; waterPos[0] += texture.getSize().x) {
+      for (waterPos[0] = std::fmod(waterPos[0], texture.getSize().x) - texture.getSize().x * (2.0 + 1.0 * sin(waterLevel.getFloatValue()));
+	   waterPos[0] < window.getSize().x ; waterPos[0] += texture.getSize().x) {
 	sf::Sprite sprite(texture);
 	sprite.setPosition(waterPos[0], waterPos[1] - texture.getSize().y);
 	window.draw(sprite);
