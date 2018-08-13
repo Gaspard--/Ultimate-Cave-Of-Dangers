@@ -22,21 +22,26 @@ namespace logic
     Vect<unsigned int, 2u> onWall;
     disp::TextureList texture;
     sf::Clock timer;
-
     Vect<unsigned, 2u> hps;
+    int dir;
   public:
     Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList, unsigned maxHps = 0);
 
     void updatePosition(Logic &);
     void update(Logic &);
     void jump() noexcept;
-    void shoot(Logic &);
+    void shoot(Logic &, FixedPoint<0, int>);
     void drift(int dir) noexcept;
     void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
 
     Vect<FixedPoint<-16, int>, 2u> const& getSpeed() const noexcept;
     sf::Clock const& getTimer() const noexcept;
+
+    int getDir() const noexcept
+    {
+      return dir;
+    }
 
     Vect<unsigned, 2u> const& getHps() const noexcept;
     Vect<unsigned, 2u>& getHps() noexcept;

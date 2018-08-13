@@ -45,49 +45,65 @@ namespace logic
 
   void Logic::update()
   {
-    if (std::holds_alternative<Playing>(state))
-      {
-	if (keyIsRight([](auto key){
-	      return sf::Keyboard::isKeyPressed(key);
-	    }))
-	  getPlayer().drift(3);
-	if (keyIsLeft([](auto key){
-	      return sf::Keyboard::isKeyPressed(key);
-	    }))
-	  getPlayer().drift(-3);
-	cameraPosition = (cameraPosition * 7_uFP + getPlayer().getPosition() * 1_uFP) / 8_uFP;
-	for (auto it(entities.begin() + 1); it < entities.end(); ++it)
-	  {
-	    Entity &entity(*it);
-	    int dir(entity.getSpeed()[0].isPositive() * 2 - 1);
-	    FixedPoint<0> nextX((FixedPoint<0>(entity.getPosition()[0] + FixedPoint<-8, int>(entity.getSpeed()[0]) * 5_FP) + FixedPoint<0>(entity.getSpeed()[0].isPositive())).value);
-
-	    if (!caveMap.getTile({nextX.value, FixedPoint<0>(entity.getPosition()[1]).value}).isSolid() && // turn around if running into a wall
-		caveMap.getTile({nextX.value, (FixedPoint<0>(entity.getPosition()[1]) - 1_uFP).value}).isSolidAbove()) // turn around if about to fall
+    std::visit([this](auto &state) noexcept(!std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
+	if constexpr (std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
+	    if (keyIsRight([](auto key){
+		  return sf::Keyboard::isKeyPressed(key);
+		}))
+	      getPlayer().drift(3);
+	    if (keyIsLeft([](auto key){
+		  return sf::Keyboard::isKeyPressed(key);
+		}))
+	      getPlayer().drift(-3);
+	    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 	      {
-		entity.drift(dir);
+		if (!state.shotDir)
+		  state.shotDir = FixedPoint<0, int>(getPlayer().getSpeed()[0].isPositive() - getPlayer().getSpeed()[0].isNegative());
+		if (!state.shootCooldownLeft)
+		  {
+		    getPlayer().shoot(*this, state.shotDir);
+		    state.shootCooldownLeft = 6;
+		  }
 	      }
-	    else
+	    else if (!state.shootCooldownLeft)
 	      {
-		entity.dash(-dir);
+		state.shotDir = 0_FP;
+	      }
+	    
+	    state.shootCooldownLeft -= !!state.shootCooldownLeft;
+	    cameraPosition = (cameraPosition * 7_uFP + getPlayer().getPosition() * 1_uFP) / 8_uFP;
+	    for (auto it(entities.begin() + 1); it < entities.end(); ++it)
+	      {
+		Entity &entity(*it);
+		int dir(entity.getSpeed()[0].isPositive() * 2 - 1);
+		FixedPoint<0> nextX((FixedPoint<0>(entity.getPosition()[0] + FixedPoint<-8, int>(entity.getSpeed()[0]) * 5_FP) + FixedPoint<0>(entity.getSpeed()[0].isPositive())).value);
+
+		if (!caveMap.getTile({nextX.value, FixedPoint<0>(entity.getPosition()[1]).value}).isSolid() && // turn around if running into a wall
+		    caveMap.getTile({nextX.value, (FixedPoint<0>(entity.getPosition()[1]) - 1_uFP).value}).isSolidAbove()) // turn around if about to fall
+		  {
+		    entity.drift(dir);
+		  }
+		else
+		  {
+		    entity.dash(-dir);
+		  }
 	      }
 	  }
-      }
-    if (!std::holds_alternative<Pause>(state))
-      {
-	waterLevel += FixedPoint<-8>{8u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
-	if (waterLevel < getPlayer().getPosition()[1])
-	  waterLevel += ((getPlayer().getPosition()[1] - waterLevel) * 1_uFP / 128_uFP);
-	std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
-	for (Entity &entity : entities)
-	  entity.update(*this);
-	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
-				      {
-					return entity.shouldBeRemoved();
-				      }), entities.end());
-	caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
-	      FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
-      }
+        if constexpr (!std::is_same_v<std::decay_t<decltype(state)>, Pause>) {
+	    waterLevel += FixedPoint<-8>{8u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
+	    if (waterLevel < getPlayer().getPosition()[1])
+	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) * 1_uFP / 128_uFP);
+	    std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
+	    for (Entity &entity : entities)
+	      entity.update(*this);
+	    entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
+					  {
+					    return entity.shouldBeRemoved();
+					  }), entities.end());
+	    caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
+		  FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
+	  }
+      }, state);
   }
 
   void Logic::removeAllEntitiesInChunk(Vect<unsigned int, 2u> chunkPos)
@@ -123,17 +139,15 @@ namespace logic
 	if (ev.key.code == sf::Keyboard::Key::W || ev.key.code == sf::Keyboard::Key::Z || ev.key.code == sf::Keyboard::Key::Up)
 	  getPlayer().jump();
 	else if (keyIsRight([&ev](auto key)
-		 {
-		   return ev.key.code == key;
-		 }))
+			    {
+			      return ev.key.code == key;
+			    }))
 	  getPlayer().dash(3);
 	else if (keyIsLeft([&ev](auto key)
-		 {
-		   return ev.key.code == key;
-		 }))
+			   {
+			     return ev.key.code == key;
+			   }))
 	  getPlayer().dash(-3);
-	else if (ev.key.code == sf::Keyboard::Key::Space)
-	  getPlayer().shoot(*this);
 	break;
       default:
 	break;

@@ -15,6 +15,8 @@ namespace logic
 
   struct Playing
   {
+    size_t shootCooldownLeft{0u};
+    FixedPoint<0, int> shotDir{0u};;
   };
 
   struct Pause
@@ -60,6 +62,10 @@ namespace logic
 
     std::variant<Playing, Pause, GameOver> const &getState() const noexcept;
     std::vector<Entity> const &getEntities() const noexcept;
+    std::vector<Entity> &getEntities() noexcept
+    {
+      return entities;
+    }
 
     Vect<FixedPoint<-8>, 2u> getCameraPosition() const noexcept
     {

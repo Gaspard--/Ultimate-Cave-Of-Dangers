@@ -169,8 +169,34 @@ namespace logic
     return hps;
   }
 
-  void Entity::shoot(Logic &)
+  void Entity::shoot(Logic &logic, FixedPoint<0, int> dir)
   {
+    FixedPoint<-8> closestPos(64_uFP);
+    FixedPoint<-8> height(position[1] + FixedPoint<-8>::One);
 
+    auto bestIt(logic.getEntities().begin());
+    for (auto it(logic.getEntities().begin() + 1); it < logic.getEntities().end(); ++it)
+      {
+	Entity &entity(*it);
+	if (entity.getPosition()[1] < height &&
+	    entity.getPosition()[1] + entity.getSize()[1] > height)
+	  {
+	    FixedPoint<-8, int> diff(FixedPoint<-8, int>(entity.getPosition()[0] - position[0]) * dir);
+
+	    if (diff.isPositive() && diff < closestPos)
+	      {
+		bestIt = it;
+		closestPos = diff;
+	      }
+	  }
+      }
+    if (bestIt != logic.getEntities().begin())
+      {
+	bestIt->speed[0] += FixedPoint<-8, int>(32) * dir;
+	bestIt->speed[1] += FixedPoint<-8, int>(16);
+	bestIt->getHps() -= 1;
+      }
+    std::cout << "shooting" << std::endl;
+    speed[0] -= FixedPoint<-8, int>(16) * dir;
   }
 }

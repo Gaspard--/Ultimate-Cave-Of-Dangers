@@ -169,5 +169,5 @@ constexpr FixedPoint<0> operator ""_uFP(long long unsigned int value) noexcept
 
 constexpr FixedPoint<0, int> operator ""_FP(long long unsigned int value) noexcept
 {
-  return FixedPoint<0, int>(value);
+  return FixedPoint<0, int>(int(value));
 }
