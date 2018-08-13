@@ -120,7 +120,7 @@ namespace logic
     switch (ev.type)
       {
       case sf::Event::KeyPressed:
-	if (ev.key.code == sf::Keyboard::Key::W || ev.key.code == sf::Keyboard::Key::Space || ev.key.code == sf::Keyboard::Key::Z || ev.key.code == sf::Keyboard::Key::Up)
+	if (ev.key.code == sf::Keyboard::Key::W || ev.key.code == sf::Keyboard::Key::Z || ev.key.code == sf::Keyboard::Key::Up)
 	  getPlayer().jump();
 	else if (keyIsRight([&ev](auto key)
 		 {
@@ -132,6 +132,8 @@ namespace logic
 		   return ev.key.code == key;
 		 }))
 	  getPlayer().dash(-1);
+	else if (ev.key.code == sf::Keyboard::Key::Space)
+	  getPlayer().shoot(*this);
 	break;
       default:
 	break;

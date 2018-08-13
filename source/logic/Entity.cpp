@@ -169,4 +169,8 @@ namespace logic
     return hps;
   }
 
+  void Entity::shoot(Logic &)
+  {
+
+  }
 }

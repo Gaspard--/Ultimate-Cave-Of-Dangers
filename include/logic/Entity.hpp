@@ -30,6 +30,7 @@ namespace logic
     void updatePosition(Logic &);
     void update(Logic &);
     void jump() noexcept;
+    void shoot(Logic &);
     void drift(int dir) noexcept;
     void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
