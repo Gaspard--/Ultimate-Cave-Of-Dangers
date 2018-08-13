@@ -50,7 +50,7 @@ namespace logic
     {
       return speed;
     }
-    
+
     sf::Clock const& getTimer() const noexcept;
 
     int getDir() const noexcept

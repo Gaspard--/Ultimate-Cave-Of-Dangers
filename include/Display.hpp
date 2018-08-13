@@ -42,6 +42,7 @@ namespace disp
      BOARD,
      SPARKS,
      SHOT,
+     HEALTH,
     };
 
   class	Display

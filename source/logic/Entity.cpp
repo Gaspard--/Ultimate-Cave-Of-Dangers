@@ -128,9 +128,9 @@ namespace logic
     if (type == EntityType::Zombie && hps[0] <= 0)
       {
 	type = EntityType::Pickup;
-	texture = disp::TextureList::BARREL;
+	texture = disp::TextureList::HEALTH;
 	size = {FixedPoint<-8>::One / 2_uFP, FixedPoint<-8>::One / 2_uFP};
-	hps = {1, 1};
+	hps = {1, 0};
 	speed[1] += FixedPoint<-8>{30};
       }
   }
