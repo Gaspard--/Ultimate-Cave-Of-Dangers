@@ -263,8 +263,8 @@ namespace logic
 
   void Logic::showHit(Vect<FixedPoint<-8>, 2u> hitPosition)
   {
-    animations.push_back({hitPosition, 2.f, disp::TextureList::SPARKS, 5});
-    animations.push_back({getPlayer().getPosition(), 20.f, disp::TextureList::SPARKS, 5});
+    animations.push_back({hitPosition, 20.f, disp::TextureList::SPARKS, 5});
+    animations.push_back({getPlayer().getPosition(), 20.f, disp::TextureList::SHOT, 5});
   }
 
   std::vector<Anim> const &Logic::getAnimations() const noexcept
