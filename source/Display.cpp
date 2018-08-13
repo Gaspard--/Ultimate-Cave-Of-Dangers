@@ -49,9 +49,12 @@ namespace disp
       glBindVertexArray(waterVao);
       glUseProgram(waterProg);
 
+      glBindAttribLocation(waterProg, 0, "pos");
+      glBindAttribLocation(waterProg, 1, "texPos");
       glBindBuffer(GL_ARRAY_BUFFER, waterBuffer);
       glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_STATIC_DRAW);
       glEnableVertexAttribArray(0);
+      glEnableVertexAttribArray(1);
       glVertexAttribPointer(0, 2, GL_FLOAT, false, 4 * sizeof(float), nullptr);
       glVertexAttribPointer(1, 2, GL_FLOAT, false, 4 * sizeof(float), reinterpret_cast<void *>(2u * sizeof(float)));
 
