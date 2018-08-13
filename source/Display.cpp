@@ -20,6 +20,8 @@ namespace disp
     loadTexture(TextureList::PARALAX, "./resources/back.png");
     loadTexture(TextureList::WAVE, "./resources/wave.png");
     loadTexture(TextureList::BOARD, "./resources/board.png");
+    loadTexture(TextureList::SHOT, "./resources/shot.png");
+    loadTexture(TextureList::SPARKS, "./resources/sparks.png");
     textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
   }
@@ -157,12 +159,15 @@ namespace disp
     for (auto entity = begin ; entity != end ; ++entity) {
       Vect<unsigned, 2u> const &hps = entity->getHps();
       unsigned animFrame = 2;
-      if (entity->getSpeed()[0].getFloatValue() > 0.05f) {
+      int dir = entity->getDir();
+      if (!dir)
+	dir = (entity->getSpeed()[0].getFloatValue() > 0.05f) - (entity->getSpeed()[0].getFloatValue() < -0.05f);
+      if (dir > 0) {
 	animFrame = 4;
 	if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 3 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
       }
-      else if (entity->getSpeed()[0].getFloatValue() < -0.05f) {
+      else if (dir < 0) {
 	animFrame = 1;
 	if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 0 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;

@@ -38,6 +38,8 @@ namespace disp
      ZOMBIE,
      WAVE,
      BOARD,
+     SPARKS,
+     SHOT,
     };
 
   class	Display
