@@ -25,7 +25,6 @@ namespace disp
 
   enum class TextureList
     {
-     LEGACY,
      CAVE_TILE,
      MINEKART,
      TABLE,
@@ -36,6 +35,7 @@ namespace disp
      WALL,
      PIECE_OF_CORNER,
      PARALAX,
+     ZOMBIE,
     };
 
   class	Display

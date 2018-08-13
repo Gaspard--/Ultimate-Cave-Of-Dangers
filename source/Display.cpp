@@ -7,7 +7,6 @@ namespace disp
     window(sf::VideoMode(1920, 1080), "Ultime Cave of Dangers")
   {
     /* load all textures here */
-    loadTexture(TextureList::LEGACY, "./resources/planet.bmp");
     loadTexture(TextureList::CAVE_TILE, "./resources/cave_tile.png");
     loadTexture(TextureList::MINEKART, "./resources/minekart.png");
     loadTexture(TextureList::BARREL, "./resources/barrel.png");
@@ -15,6 +14,7 @@ namespace disp
     loadTexture(TextureList::SIDE, "./resources/side.png");
     loadTexture(TextureList::TABLE, "./resources/table.png");
     loadTexture(TextureList::BOB, "./resources/BobSpriteSheet.png");
+    loadTexture(TextureList::ZOMBIE, "./resources/ZombieSpriteSheet.png");
     loadTexture(TextureList::WALL, "./resources/wall.png");
     loadTexture(TextureList::PIECE_OF_CORNER, "./resources/piece_of_corner.png");
     loadTexture(TextureList::PARALAX, "./resources/back.png");
@@ -63,6 +63,8 @@ namespace disp
       sprite.setTextureRect({int(textureWidth * float(animation[0])), 0, int(textureWidth), int(textureHeight)});
     position += Vect<float, 2u>(0.5f, -0.5f);
     position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
+    position -= Vect<float, 2u>(camera.zoom[0] * float(window.getSize().x) * size[0] / 2.f,
+	camera.zoom[1] * float(window.getSize().y) * size[1] / 2.f);
     sprite.setPosition(position[0], position[1]);
     window.draw(sprite);
     return (position);
