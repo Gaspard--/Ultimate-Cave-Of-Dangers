@@ -10,6 +10,7 @@ namespace logic
     , grounded(0)
     , texture(texture)
     , hps({maxHps, maxHps})
+    , dir(0)
   {
   }
 
@@ -169,8 +170,9 @@ namespace logic
     return hps;
   }
 
-  void Entity::shoot(Logic &logic, FixedPoint<0, int> dir)
+  void Entity::shoot(Logic &logic)
   {
+    FixedPoint<0, int> dir(this->dir);
     FixedPoint<-8> closestPos(64_uFP);
     FixedPoint<-8> height(position[1] + FixedPoint<-8>::One);
 
@@ -195,6 +197,7 @@ namespace logic
 	bestIt->speed[0] += FixedPoint<-8, int>(32) * dir;
 	bestIt->speed[1] += FixedPoint<-8, int>(16);
 	bestIt->getHps() -= 1;
+	bestIt->setDir(-this->dir);
       }
     std::cout << "shooting" << std::endl;
     speed[0] -= FixedPoint<-8, int>(16) * dir;

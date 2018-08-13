@@ -30,7 +30,7 @@ namespace logic
     void updatePosition(Logic &);
     void update(Logic &);
     void jump() noexcept;
-    void shoot(Logic &, FixedPoint<0, int>);
+    void shoot(Logic &);
     void drift(int dir) noexcept;
     void dash(int dir) noexcept;
     bool shouldBeRemoved() const noexcept;
@@ -41,6 +41,11 @@ namespace logic
     int getDir() const noexcept
     {
       return dir;
+    }
+
+    void setDir(int dir) noexcept
+    {
+      this->dir = dir;
     }
 
     Vect<unsigned, 2u> const& getHps() const noexcept;

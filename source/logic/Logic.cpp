@@ -57,17 +57,17 @@ namespace logic
 	      getPlayer().drift(-3);
 	    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 	      {
-		if (!state.shotDir)
-		  state.shotDir = FixedPoint<0, int>(getPlayer().getSpeed()[0].isPositive() - getPlayer().getSpeed()[0].isNegative());
+		if (!getPlayer().getDir())
+		  getPlayer().setDir(getPlayer().getSpeed()[0].isPositive() - getPlayer().getSpeed()[0].isNegative());
 		if (!state.shootCooldownLeft)
 		  {
-		    getPlayer().shoot(*this, state.shotDir);
+		    getPlayer().shoot(*this);
 		    state.shootCooldownLeft = 6;
 		  }
 	      }
 	    else if (!state.shootCooldownLeft)
 	      {
-		state.shotDir = 0_FP;
+		getPlayer().setDir(0);
 	      }
 	    
 	    state.shootCooldownLeft -= !!state.shootCooldownLeft;
@@ -76,16 +76,27 @@ namespace logic
 	      {
 		Entity &entity(*it);
 		int dir(entity.getSpeed()[0].isPositive() * 2 - 1);
-		FixedPoint<0> nextX((FixedPoint<0>(entity.getPosition()[0] + FixedPoint<-8, int>(entity.getSpeed()[0]) * 5_FP) + FixedPoint<0>(entity.getSpeed()[0].isPositive())).value);
-
-		if (!caveMap.getTile({nextX.value, FixedPoint<0>(entity.getPosition()[1]).value}).isSolid() && // turn around if running into a wall
-		    caveMap.getTile({nextX.value, (FixedPoint<0>(entity.getPosition()[1]) - 1_uFP).value}).isSolidAbove()) // turn around if about to fall
+		if (int faceDir = entity.getDir())
 		  {
-		    entity.drift(dir);
+		    entity.drift(faceDir);
+		    if (faceDir != dir)
+		      entity.dash(faceDir);
+		    else
+		      entity.setDir(0);
 		  }
 		else
 		  {
-		    entity.dash(-dir);
+		    FixedPoint<0> nextX((FixedPoint<0>(entity.getPosition()[0] + FixedPoint<-8, int>(entity.getSpeed()[0]) * 5_FP) + FixedPoint<0>(entity.getSpeed()[0].isPositive())).value);
+
+		    if (!caveMap.getTile({nextX.value, FixedPoint<0>(entity.getPosition()[1]).value}).isSolid() && // turn around if running into a wall
+			caveMap.getTile({nextX.value, (FixedPoint<0>(entity.getPosition()[1]) - 1_uFP).value}).isSolidAbove()) // turn around if about to fall
+		      {
+			entity.drift(dir);
+		      }
+		    else
+		      {
+			entity.dash(-dir);
+		      }
 		  }
 	      }
 	  }

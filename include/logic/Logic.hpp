@@ -16,7 +16,6 @@ namespace logic
   struct Playing
   {
     size_t shootCooldownLeft{0u};
-    FixedPoint<0, int> shotDir{0u};;
   };
 
   struct Pause
