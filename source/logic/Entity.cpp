@@ -4,8 +4,8 @@
 namespace logic
 {
 
-  Entity::Entity(disp::TextureList texture, unsigned maxHps)
-    : position(FixedPoint<0>(1), FixedPoint<0>(2))
+  Entity::Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList texture, unsigned maxHps)
+    : position(position)
     , size(FixedPoint<0>(1), FixedPoint<0>(2))
     , grounded(0)
     , texture(texture)

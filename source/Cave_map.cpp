@@ -1,11 +1,14 @@
+#include <cassert>
+
 #include "Cave_map.hpp"
+#include "logic/Logic.hpp"
 
 size_t CaveMap::lastUsedChunk = 0;
 
 CaveMap::CaveMap()
   : firstChunk(1)
 {
-  chunks[0].init({0, 0});
+  chunks[0].init({FixedPoint<0>{logic::SpawnPosX}.value / CHUNK_SIZE, 0});
   while (firstChunk)
     genNextChunk();
 }
@@ -14,6 +17,27 @@ void CaveMap::genNextChunk()
 {
   chunks[firstChunk].init(chunks[(chunks.size() + firstChunk - 1) % chunks.size()]);
   ++firstChunk %= chunks.size();
+}
+
+void CaveMap::regenIfNecessary(Vect<unsigned int, 2> position) noexcept
+{
+  Vect<unsigned int, 2> chunkPos(position / CHUNK_SIZE);
+
+  for (size_t i(0u); i < chunks.size(); ++i)
+    {
+      CaveChunk &chunk(getChunk(i));
+      if (!(chunk.getPos() - chunkPos).any())
+	{
+	  std::cout << "currentChunk" << i << std::endl;
+	  while (i > 5)
+	    {
+	      genNextChunk();
+	      --i;
+	    }
+	  return ;
+	}
+    }
+  assert(!"This is unfortunate: you seem to be outside the generated level :/");
 }
 
 CaveChunk &CaveMap::getChunk(size_t index) noexcept

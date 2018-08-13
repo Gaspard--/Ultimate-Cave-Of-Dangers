@@ -19,7 +19,7 @@ namespace logic
   Logic::Logic()
     : state(Playing{})
   {
-    entities.push_back({disp::TextureList::BOB, 20});
+    entities.push_back(Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, 20});
   }
 
   Entity &Logic::getPlayer() noexcept
@@ -54,16 +54,19 @@ namespace logic
 	      return sf::Keyboard::isKeyPressed(key);
 	    }))
 	  getPlayer().drift(-1);
-	cameraPosition = cameraPosition * FixedPoint<-3>(7) + getPlayer().getPosition()  * FixedPoint<-3>(1);
+	cameraPosition = (cameraPosition * 7_uFP + getPlayer().getPosition() * 1_uFP) / 8_uFP;
       }
     if (!std::holds_alternative<Pause>(state))
       {
+	waterLevel += FixedPoint<-8>{1} + ((getPlayer().getPosition()[1] - waterLevel) * 1_uFP / 16_uFP);
 	for (Entity &entity : entities)
 	  entity.update(*this);
 	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
 				      {
 					return entity.shouldBeRemoved();
 				      }), entities.end());
+	caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
+	      FixedPoint<0>(getPlayer().getPosition()[1]).value});
       }
   }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHUNK_SIZE 64
+#define CHUNK_SIZE 32
 #define ROOM_LIMITE 10
 
 #include <array>

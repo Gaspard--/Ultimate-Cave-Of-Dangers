@@ -25,7 +25,7 @@ namespace logic
 
     Vect<unsigned, 2u> hps;
   public:
-    Entity(disp::TextureList, unsigned maxHps = 0);
+    Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList, unsigned maxHps = 0);
 
     void updatePosition(Logic &);
     void update(Logic &);

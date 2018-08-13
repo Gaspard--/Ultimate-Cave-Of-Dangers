@@ -62,7 +62,7 @@ void CaveChunk::init(CaveChunk const &previous) noexcept
     bool last = false;
     while (true)
       {
-	unsigned int target(nextRandomNumber() % (CHUNK_SIZE - 3) + 3);
+	unsigned int target((nextRandomNumber() % (CHUNK_SIZE - 4) + 4));
 	switch (currentDir)
 	  {
 	  case ExitDirection::Left:
@@ -104,13 +104,13 @@ void CaveChunk::init(CaveChunk const &previous) noexcept
 	    lowPos[0] -= target;
 	    lowPos[1] += thickness;
 	    currentDir = ExitDirection::Up;
-	    thickness = nextRandomNumber() % (target - 2) + 2;
+	    thickness = nextRandomNumber() % (target - 3) + 3;
 	    break;
 	  case ExitDirection::Right:
 	    lowPos[0] += target;
 	    lowPos[1] += thickness;
 	    currentDir = ExitDirection::Up;
-	    thickness = nextRandomNumber() % (target - 2) + 2;
+	    thickness = nextRandomNumber() % (target - 3) + 3;
 	    lowPos[0] -= thickness;
 	    break;
 	  case ExitDirection::Up:
@@ -121,7 +121,7 @@ void CaveChunk::init(CaveChunk const &previous) noexcept
 	      currentDir = previous.exitDir;
 	    if (currentDir == ExitDirection::Right)
 	      lowPos[0] += thickness;
-	    thickness = nextRandomNumber() % (target - 2) + 2;
+	    thickness = nextRandomNumber() % (target - 3) + 3;
 	    lowPos[1] -= thickness;
 	    break;
 	  }
