@@ -35,17 +35,25 @@ namespace logic
     std::vector<Anim> animations;
     Vect<FixedPoint<-8>, 2u> cameraPosition;
     FixedPoint<-8> waterLevel;
+    FixedPoint<-12> waterSpeed;
     unsigned int waterDamageCooldown;
 
     std::variant<Playing, GameOver> state;
     CaveMap caveMap;
   public:
+    unsigned int score;
+
     Logic();
 
     void update();
     void handleEvent(const sf::Event& e);
     void handleEvent(GameOver &, sf::Event const &);
     void handleEvent(Playing &, sf::Event const &);
+
+    unsigned int getScore() const noexcept
+    {
+      return score + FixedPoint<-4>(waterLevel).value;
+    }
 
     Entity &getPlayer() noexcept;
     Entity const &getPlayer() const noexcept;

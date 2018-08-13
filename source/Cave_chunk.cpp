@@ -92,11 +92,11 @@ void CaveChunk::init(CaveChunk const &previous, logic::Logic &logic) noexcept
 		{
 		  for (unsigned int j(0u); j < thickness; ++j)
 		    getTile(lowPos + Vect<unsigned int, 2u>{j, i}) = Tile(TileType::Empty);
-		  if (i >= lastPlateForm + 3 && i <= target - 3 && (nextRandomNumber() % (thickness) > 7))
+		  if (i >= lastPlateForm + 3 && i <= target - 3 && (nextRandomNumber() % (thickness) > 4))
 		    {
 		      lastPlateForm = i;
-		      unsigned int length(nextRandomNumber() % thickness);
-		      unsigned int begin(nextRandomNumber() % (thickness - length));
+		      unsigned int length(nextRandomNumber() % (thickness - 2));
+		      unsigned int begin(nextRandomNumber() % (thickness - length - 1) + 1);
 		      for (unsigned int j(begin); j < begin + length; ++j)
 			getTile(lowPos + Vect<unsigned int, 2u>{j, i}) = Tile(TileType::Platform);
 		      logic.spawnZombie(pos * CHUNK_SIZE + lowPos + Vect<unsigned int, 2u>{begin, i});

@@ -24,11 +24,14 @@ namespace logic
   }
 
   Logic::Logic()
-    : state(Playing{})
+    : cameraPosition(SpawnPosX, 0_FP)
+    , waterSpeed(64)
+    , state(Playing{})
     , caveMap(*this)
     , waterDamageCooldown(30)
+    , score(0u)
   {
-    entities.insert(entities.begin(), Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, EntityType::Player, 20});
+    entities.insert(entities.begin(), Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, EntityType::Player, 40});
   }
 
   Entity &Logic::getPlayer() noexcept
@@ -76,6 +79,8 @@ namespace logic
 	if (!state.shootCooldownLeft)
 	  {
 	    getPlayer().shoot(*this);
+	    animations.push_back({getPlayer().getPosition() + Vect<FixedPoint<-8>, 2u>{0_uFP, 1_uFP}, 20.f, disp::TextureList::SPARKS, 5});
+	    animations.push_back({getPlayer().getPosition() + Vect<FixedPoint<-8>, 2u>{getPlayer().getDir() != -1 ? 6_uFP : -2_uFP, 1_uFP}, 20.f, disp::TextureList::SHOT_LINE, 1});
 	    state.shootCooldownLeft = 6;
 	  }
       }
@@ -127,7 +132,7 @@ namespace logic
 	    if (waterLevel < getPlayer().getPosition()[1])
 	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) / 256_uFP);
 	  }
-        waterLevel += FixedPoint<-8>{8u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 12.0f)};
+        waterLevel += FixedPoint<-8>(waterSpeed) + FixedPoint<-8>{uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 12.0f)};
 	for (auto it(entities.begin() + 1); it < entities.end(); ++it)
 	  {
 	    Entity &entity(*it);
@@ -152,6 +157,7 @@ namespace logic
 		    impulse[1] += FixedPoint<-16>{16};
 		    getPlayer().getSpeed() += Vect<FixedPoint<-16, int>, 2u>(impulse);
 		    getPlayer().getHps()[0] -= 2;
+		    showHit({getPlayer().getPosition() + getPlayer().getSize() / 2_FP});
 		  }
 		  break;
 		case EntityType::Pickup:
@@ -161,6 +167,7 @@ namespace logic
 		    getPlayer().getHps()[0] += 5;
 		    if (getPlayer().getHps()[0] > getPlayer().getHps()[1])
 		      getPlayer().getHps()[0] = getPlayer().getHps()[1];
+		    score += 20;
 		  }
 		  break;
 		case EntityType::Table:
@@ -169,6 +176,7 @@ namespace logic
 		    {
 		      getPlayer().setGrounded(10);
 		      getPlayer().getSpeed()[1] = entity.getSpeed()[1] - getPlayer().getSpeed()[1] * 2_FP;
+		      score += 5;
 		    }
 		  break;
 		}
@@ -183,7 +191,10 @@ namespace logic
 	  else if (!waterDamageCooldown && entity.getPosition()[1] + entity.getSize()[1] < waterLevel)
 	    entity.getHps()[0] -= 1;
 	if (!waterDamageCooldown)
-	  waterDamageCooldown = 30;
+	  {
+	    waterDamageCooldown = 30;
+	    waterSpeed += FixedPoint<-12>{1};
+	  }
 	for (Anim &anim : animations)
 	  anim.update();
 	for (Entity &entity : entities)
@@ -307,8 +318,7 @@ namespace logic
 
   void Logic::showHit(Vect<FixedPoint<-8>, 2u> hitPosition)
   {
-    animations.push_back({hitPosition, 20.f, disp::TextureList::SPARKS, 5});
-    animations.push_back({getPlayer().getPosition(), 20.f, disp::TextureList::SHOT, 5});
+    animations.push_back({hitPosition, 20.f, disp::TextureList::SHOT, 5});
   }
 
   std::vector<Anim> const &Logic::getAnimations() const noexcept

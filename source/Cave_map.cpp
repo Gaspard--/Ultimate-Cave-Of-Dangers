@@ -34,6 +34,7 @@ void CaveMap::regenIfNecessary(Vect<unsigned int, 2> position, logic::Logic &log
 	  std::cout << "currentChunk" << i << std::endl;
 	  while (i > 5)
 	    {
+	      logic.score += 100;
 	      genNextChunk(logic);
 	      --i;
 	    }

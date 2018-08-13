@@ -132,6 +132,7 @@ namespace logic
 	size = {FixedPoint<-8>::One / 2_uFP, FixedPoint<-8>::One / 2_uFP};
 	hps = {0, 0};
 	speed[1] += FixedPoint<-8>{30};
+	logic.score += 10;
       }
   }
 
@@ -152,10 +153,7 @@ namespace logic
 
   void Entity::drift(int dir) noexcept
   {
-    if (grounded)
-      speed[0] += FixedPoint<-10, int>{dir * 8};
-    else
-      speed[0] += FixedPoint<-10, int>{dir * 4};
+    speed[0] += FixedPoint<-10, int>{dir * 8};
   }
 
   void Entity::dash(int dir) noexcept
@@ -217,6 +215,7 @@ namespace logic
 	  {
 	    bestIt->getHps()[0] -= 1;
 	    bestIt->setDir(-this->dir);
+	    logic.score += 5;
 	  }
       }
     std::cout << "shooting" << std::endl;

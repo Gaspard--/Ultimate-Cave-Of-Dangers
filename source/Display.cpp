@@ -23,6 +23,7 @@ namespace disp
     loadTexture(TextureList::SHOT, "./resources/shot.png");
     loadTexture(TextureList::SPARKS, "./resources/sparks.png");
     loadTexture(TextureList::HEALTH, "./resources/health.png");
+    loadTexture(TextureList::SHOT_LINE, "./resources/shotline.png");
     textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
   }
@@ -159,9 +160,9 @@ namespace disp
   {
     for (auto anim = begin ; anim != end ; ++anim) {
       renderSprite(textures[anim->getTexture()],
-		  camera.apply(Vect<float, 2u>::fromFixedPoint(anim->getPosition())), 0.0f,
-		  {1.f, 1.f},
-		  {1, 1}, anim->getAnimationPosition());
+		   camera.apply(Vect<float, 2u>::fromFixedPoint(anim->getPosition())), 0.0f,
+		   {(anim->getTexture() == TextureList::SHOT_LINE ? 5.0f : 1.0f), (anim->getTexture() == TextureList::SHOT_LINE ? 0.1f : 1.0f)},
+		   {1, 1}, anim->getAnimationPosition());
     }
   }
 

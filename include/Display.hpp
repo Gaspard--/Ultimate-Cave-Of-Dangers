@@ -43,6 +43,7 @@ namespace disp
      SPARKS,
      SHOT,
      HEALTH,
+     SHOT_LINE
     };
 
   class	Display
