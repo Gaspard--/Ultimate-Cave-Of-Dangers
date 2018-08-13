@@ -65,5 +65,8 @@ namespace logic
     {
       return cameraPosition;
     }
+
+    void removeAllEntitiesInChunk(Vect<unsigned int, 2u> chunkPos);
+    void spawnZombie(Vect<unsigned int, 2u> floorPosition);
   };
 };

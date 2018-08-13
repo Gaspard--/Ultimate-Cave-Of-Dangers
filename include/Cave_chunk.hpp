@@ -17,6 +17,11 @@ enum class ExitDirection : unsigned char
     Right,
   };
 
+namespace logic
+{
+  class Logic;
+}
+
 class CaveChunk
 {
 private:
@@ -28,7 +33,7 @@ public:
   CaveChunk() = default;
 
   void init(Vect<unsigned int, 2u> previous) noexcept;
-  void init(const CaveChunk &previous) noexcept;
+  void init(const CaveChunk &previous, logic::Logic &) noexcept;
 
   const Vect<unsigned int, 2u> &getPos() const noexcept
   {
