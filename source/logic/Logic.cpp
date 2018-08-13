@@ -50,11 +50,11 @@ namespace logic
 	if (keyIsRight([](auto key){
 	      return sf::Keyboard::isKeyPressed(key);
 	    }))
-	  getPlayer().drift(1);
+	  getPlayer().drift(3);
 	if (keyIsLeft([](auto key){
 	      return sf::Keyboard::isKeyPressed(key);
 	    }))
-	  getPlayer().drift(-1);
+	  getPlayer().drift(-3);
 	cameraPosition = (cameraPosition * 7_uFP + getPlayer().getPosition() * 1_uFP) / 8_uFP;
 	for (auto it(entities.begin() + 1); it < entities.end(); ++it)
 	  {
@@ -126,12 +126,12 @@ namespace logic
 		 {
 		   return ev.key.code == key;
 		 }))
-	  getPlayer().dash(1);
+	  getPlayer().dash(3);
 	else if (keyIsLeft([&ev](auto key)
 		 {
 		   return ev.key.code == key;
 		 }))
-	  getPlayer().dash(-1);
+	  getPlayer().dash(-3);
 	break;
       default:
 	break;

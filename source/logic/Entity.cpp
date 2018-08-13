@@ -140,14 +140,14 @@ namespace logic
 
   void Entity::drift(int dir) noexcept
   {
-    speed[0] += FixedPoint<-10, int>{dir * 32};
+    speed[0] += FixedPoint<-10, int>{dir * 8};
   }
 
   void Entity::dash(int dir) noexcept
   {
     if (grounded && speed[0].isPositive() - speed[0].isNegative() != dir)
       {
-	speed[0] += FixedPoint<-8, int>{dir * 48};
+	speed[0] += FixedPoint<-8, int>{dir * 12};
 	speed[1] += FixedPoint<-8, int>{4};
       }
   }
