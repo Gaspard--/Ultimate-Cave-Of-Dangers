@@ -19,6 +19,7 @@ namespace disp
     loadTexture(TextureList::PIECE_OF_CORNER, "./resources/piece_of_corner.png");
     loadTexture(TextureList::PARALAX, "./resources/back.png");
     loadTexture(TextureList::WAVE, "./resources/wave.png");
+    loadTexture(TextureList::BOARD, "./resources/board.png");
     textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
   }
@@ -141,7 +142,7 @@ namespace disp
 		wallCount = 0;
 	      }
 	    if (tiles[x][y] == TileType::Platform)
-	      renderSprite(textures[TextureList::CAVE_TILE], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), 0.0f);
+	      renderSprite(textures[TextureList::BOARD], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), 0.0f);
 	  }
 	if (wallCount)
 	  {
