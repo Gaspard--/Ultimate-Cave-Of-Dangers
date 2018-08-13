@@ -91,7 +91,7 @@ namespace logic
 	else
 	  {
 	    move(1);
-	    unsigned int y(FixedPoint<0>(position[1] + (delta[1].isPositive() ? size[1] : FixedPoint<-8>::Zero)).value - !delta[1].isPositive());
+	    unsigned int y(FixedPoint<0>(position[1] + (delta[1].isPositive() ? size[1] : FixedPoint<-8>::Zero)).value - delta[1].isNegative());
 	    unsigned int minX(FixedPoint<0>(position[0]).value);
 	    unsigned int maxX(FixedPoint<0>(position[0] + size[0]).value + !!((position[0] + size[0]) % FixedPoint<-8, int>::One));
 	    for (unsigned int x(minX); x != maxX; ++x)
@@ -130,18 +130,23 @@ namespace logic
   {
     if (grounded)
       {
-	speed[1] = FixedPoint<-8, int>{120};
+	speed[1] = FixedPoint<-8, int>{128};
+	grounded = false;
       }
     else if (onWall.any())
       {
-	speed[0] = -FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 128};
+	speed[0] = -FixedPoint<-8, int>{(!onWall[1] - !onWall[0]) * 192};
 	speed[1] = FixedPoint<-8, int>{120};
+	onWall = {false, false};
       }
   }
 
   void Entity::drift(int dir) noexcept
   {
-    speed[0] += FixedPoint<-10, int>{dir * 8};
+    if (grounded)
+      speed[0] += FixedPoint<-10, int>{dir * 8};
+    else
+      speed[0] += FixedPoint<-10, int>{dir * 4};
   }
 
   void Entity::dash(int dir) noexcept
