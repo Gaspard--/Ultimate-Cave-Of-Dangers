@@ -27,7 +27,7 @@ namespace logic
     , caveMap(*this)
     , waterDamageCooldown(30)
   {
-    entities.insert(entities.begin(), Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, 20});
+    entities.insert(entities.begin(), Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, EntityType::Player, 20});
   }
 
   Entity &Logic::getPlayer() noexcept
@@ -50,36 +50,40 @@ namespace logic
     return (caveMap);
   }
 
+  void Logic::checkInputs(Playing &state)
+  {
+    if (keyIsRight([](auto key){
+	  return sf::Keyboard::isKeyPressed(key);
+	}))
+      getPlayer().drift(3);
+    if (keyIsLeft([](auto key){
+	  return sf::Keyboard::isKeyPressed(key);
+	}))
+      getPlayer().drift(-3);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+      {
+	if (!getPlayer().getDir())
+	  getPlayer().setDir(getPlayer().getSpeed()[0].isPositive() - getPlayer().getSpeed()[0].isNegative());
+	if (!state.shootCooldownLeft)
+	  {
+	    getPlayer().shoot(*this);
+	    state.shootCooldownLeft = 6;
+	  }
+      }
+    else if (!state.shootCooldownLeft)
+      {
+	getPlayer().setDir(0);
+      }
+    state.shootCooldownLeft -= !!state.shootCooldownLeft;
+  }
+
   void Logic::update()
   {
     std::visit([this](auto &state) noexcept(!std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
 	if constexpr (std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
 	    if (state.pause)
 	      return ;
-	    if (keyIsRight([](auto key){
-		  return sf::Keyboard::isKeyPressed(key);
-		}))
-	      getPlayer().drift(3);
-	    if (keyIsLeft([](auto key){
-		  return sf::Keyboard::isKeyPressed(key);
-		}))
-	      getPlayer().drift(-3);
-	    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
-	      {
-		if (!getPlayer().getDir())
-		  getPlayer().setDir(getPlayer().getSpeed()[0].isPositive() - getPlayer().getSpeed()[0].isNegative());
-		if (!state.shootCooldownLeft)
-		  {
-		    getPlayer().shoot(*this);
-		    state.shootCooldownLeft = 6;
-		  }
-	      }
-	    else if (!state.shootCooldownLeft)
-	      {
-		getPlayer().setDir(0);
-	      }
-
-	    state.shootCooldownLeft -= !!state.shootCooldownLeft;
+	    checkInputs(state);
 	    cameraPosition = (cameraPosition * 7_uFP + getPlayer().getPosition() * 1_uFP) / 8_uFP;
 	    for (auto it(entities.begin() + 1); it < entities.end(); ++it)
 	      {
@@ -112,16 +116,53 @@ namespace logic
 	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) / 256_uFP);
 	  }
         waterLevel += FixedPoint<-8>{16u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
-	std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
-	if (!--waterDamageCooldown)
-	  {
-	    for (Entity &entity : entities)
-	      if (entity.getPosition()[1] + entity.getSize()[1] < waterLevel)
-		entity.getHps()[0] -= 1;
-	    waterDamageCooldown = 30;
-	  }
 	for (Entity &entity : entities)
 	  entity.update(*this);
+	for (auto it(entities.begin() + 1); it < entities.end(); ++it)
+	  {
+	    Entity &entity(*it);
+	    for (uint32_t i(0); i < 2; ++i)
+	      {
+		if (getPlayer().getPosition()[i] + getPlayer().getSize()[i] < entity.getPosition()[i] ||
+		    entity.getPosition()[i] + entity.getSize()[i] < getPlayer().getPosition()[i])
+		  goto skip;
+	      }
+	    {
+	      switch (entity.type)
+		{
+		case EntityType::Zombie:
+		  {
+		    Vect<FixedPoint<-8, int>, 2u> impulse(getPlayer().getPosition() - entity.getPosition());
+		    FixedPoint<-8, int> length(int(std::sqrt(float(impulse.length2().value))));
+		    if (!!length)
+		      {
+			impulse *= 2_FP;
+			impulse /= length;
+		      }
+		    impulse[1] += FixedPoint<-16>{16};
+		    getPlayer().getSpeed() += Vect<FixedPoint<-16, int>, 2u>(impulse);
+		    getPlayer().getHps()[0] -= 2;
+		  }
+		  break;
+		case EntityType::Pickup:
+		  {
+		    entity.getHps()[0] = 0;
+		    getPlayer().getHps()[0] += 5;
+		  }
+		  break;
+		}
+	    }
+	  skip:
+	    ;
+	  }
+	--waterDamageCooldown;
+	for (Entity &entity : entities)
+	  if (entity.floats() &&entity.getPosition()[1] < waterLevel)
+	    entity.getSpeed()[1] += FixedPoint<-8>{12};
+	  else if (!waterDamageCooldown && entity.getPosition()[1] + entity.getSize()[1] < waterLevel)
+	    entity.getHps()[0] -= 1;
+	if (!waterDamageCooldown)
+	  waterDamageCooldown = 30;
 	for (Anim &anim : animations)
 	  anim.update();
 	if (getPlayer().shouldBeRemoved())
@@ -162,6 +203,7 @@ namespace logic
 
   void Logic::handleEvent(GameOver &, sf::Event const &)
   {
+
   }
 
   void Logic::handleEvent(Playing &state, sf::Event const &ev)
@@ -215,7 +257,8 @@ namespace logic
 	  FixedPoint<-16>::One * FixedPoint<0>(floorPosition[0]),
 	    FixedPoint<-16>::One  * FixedPoint<0>(floorPosition[1] + 1)
 	    },
-	  disp::TextureList::ZOMBIE, 6});
+	  disp::TextureList::ZOMBIE,
+	    EntityType::Zombie, 6});
   }
 
   void Logic::showHit(Vect<FixedPoint<-8>, 2u> hitPosition)
