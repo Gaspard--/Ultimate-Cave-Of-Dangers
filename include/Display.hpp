@@ -36,6 +36,7 @@ namespace disp
      PIECE_OF_CORNER,
      PARALAX,
      ZOMBIE,
+     WAVE,
     };
 
   class	Display

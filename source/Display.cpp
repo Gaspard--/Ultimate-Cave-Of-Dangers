@@ -18,6 +18,7 @@ namespace disp
     loadTexture(TextureList::WALL, "./resources/wall.png");
     loadTexture(TextureList::PIECE_OF_CORNER, "./resources/piece_of_corner.png");
     loadTexture(TextureList::PARALAX, "./resources/back.png");
+    loadTexture(TextureList::WAVE, "./resources/wave.png");
     textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
   }
@@ -40,7 +41,6 @@ namespace disp
   {
     return (window.isOpen());
   }
-
   Vect<float, 2u> Display::renderSprite(sf::Texture const &texture,
 					Vect<float, 2u> position,
 					float rotation, Vect<float, 2u> size,
@@ -155,12 +155,12 @@ namespace disp
       Vect<unsigned, 2u> const &hps = entity->getHps();
       unsigned animFrame = 2;
       if (entity->getspeed()[0].getFloatValue() > 0.05f) {
-	animFrame = 3;
+	animFrame = 4;
 	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 3 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
       }
       else if (entity->getspeed()[0].getFloatValue() < -0.05f) {
-	animFrame = 0;
+	animFrame = 1;
 	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 0 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
       }
@@ -228,6 +228,22 @@ namespace disp
 
   void Display::renderWater(FixedPoint<-8> waterLevel)
   {
+    Vect<float, 2u> waterPos = camera.apply(Vect<float, 2u>(0.f, waterLevel.getFloatValue()));
+    sf::Texture texture = textures[TextureList::WAVE];
+    sf::RectangleShape water({window.getSize().x, window.getSize().y});
+    water.setFillColor(sf::Color(0x06207796));
+    waterPos[1] = 350.f;
+    if (waterPos[1] < 0)
+      waterPos[1] = 0.f;
+    water.setPosition(0.f, waterPos[1]);
+    window.draw(water);
+
+    if (waterPos[1] > 0)
+      for (waterPos[0] = 0.f ; waterPos[0] < window.getSize().x ; waterPos[0] += texture.getSize().x) {
+	sf::Sprite sprite(texture);
+	sprite.setPosition(waterPos[0], waterPos[1] - texture.getSize().y);
+	window.draw(sprite);
+      }
   }
 
   void Display::render(logic::Logic const &logic)
@@ -235,12 +251,11 @@ namespace disp
     Vect<float, 2u> oldCameraPos = camera.offset;
     camera.offset = Vect<float, 2u>::fromFixedPoint(logic.getCameraPosition());
     camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
- 
-    window.clear();
-    renderWater(logic.getWaterLevel());
+
     renderParalax(camera.offset - oldCameraPos);
-    renderMap(logic.getMap());
     renderEntities(logic.getEntities().begin(), logic.getEntities().end());
+    renderWater(logic.getWaterLevel());
+    renderMap(logic.getMap());
     window.display();
   }
 
