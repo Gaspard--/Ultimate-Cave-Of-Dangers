@@ -188,4 +188,8 @@ namespace logic
 	    },
 	  disp::TextureList::ZOMBIE, 6});
   }
+
+  void Logic::showHit(Vect<FixedPoint<-8>, 2u> hitPosition)
+  {
+  }
 }
