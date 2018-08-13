@@ -16,10 +16,7 @@ namespace logic
   struct Playing
   {
     size_t shootCooldownLeft{0u};
-  };
-
-  struct Pause
-  {
+    bool pause{0u};
   };
 
   struct GameOver
@@ -37,7 +34,7 @@ namespace logic
     FixedPoint<-8> waterLevel;
     unsigned int waterDamageCooldown;
 
-    std::variant<Playing, Pause, GameOver> state;
+    std::variant<Playing, GameOver> state;
     CaveMap caveMap;
   public:
     Logic();
@@ -46,7 +43,6 @@ namespace logic
     void handleEvent(const sf::Event& e);
     void handleEvent(GameOver &, sf::Event const &);
     void handleEvent(Playing &, sf::Event const &);
-    void handleEvent(Pause &, sf::Event const &);
 
     Entity &getPlayer() noexcept;
     Entity const &getPlayer() const noexcept;
@@ -60,7 +56,7 @@ namespace logic
       return waterLevel;
     }
 
-    std::variant<Playing, Pause, GameOver> const &getState() const noexcept;
+    std::variant<Playing, GameOver> const &getState() const noexcept;
     std::vector<Entity> const &getEntities() const noexcept;
     std::vector<Entity> &getEntities() noexcept
     {

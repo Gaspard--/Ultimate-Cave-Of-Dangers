@@ -16,6 +16,12 @@ namespace logic
     return check(sf::Keyboard::Key::Q) || check(sf::Keyboard::Key::A) || check(sf::Keyboard::Key::Left);
   }
 
+  template<class Func>
+  inline bool keyIsPause(Func check)
+  {
+    return check(sf::Keyboard::Key::Escape) || check(sf::Keyboard::Key::P);
+  }
+
   Logic::Logic()
     : state(Playing{})
     , caveMap(*this)
@@ -48,6 +54,8 @@ namespace logic
   {
     std::visit([this](auto &state) noexcept(!std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
 	if constexpr (std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
+	    if (state.pause)
+	      return ;
 	    if (keyIsRight([](auto key){
 		  return sf::Keyboard::isKeyPressed(key);
 		}))
@@ -100,30 +108,28 @@ namespace logic
 		      }
 		  }
 	      }
-	  }
-        if constexpr (!std::is_same_v<std::decay_t<decltype(state)>, Pause>) {
-	    waterLevel += FixedPoint<-8>{16u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
 	    if (waterLevel < getPlayer().getPosition()[1])
 	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) / 256_uFP);
-	    std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
-	    if (!--waterDamageCooldown)
-	      {
-		for (Entity &entity : entities)
-		  if (entity.getPosition()[1] + entity.getSize()[1] < waterLevel)
-		    entity.getHps()[0] -= 1;
-		waterDamageCooldown = 30;
-	      }
-	    for (Entity &entity : entities)
-	      entity.update(*this);
-	    if (getPlayer().shouldBeRemoved())
-	      this->state = GameOver();
-	    entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
-					  {
-					    return entity.shouldBeRemoved();
-					  }), entities.end());
-	    caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
-		  FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
 	  }
+        waterLevel += FixedPoint<-8>{16u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
+	std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
+	if (!--waterDamageCooldown)
+	  {
+	    for (Entity &entity : entities)
+	      if (entity.getPosition()[1] + entity.getSize()[1] < waterLevel)
+		entity.getHps()[0] -= 1;
+	    waterDamageCooldown = 30;
+	  }
+	for (Entity &entity : entities)
+	  entity.update(*this);
+	if (getPlayer().shouldBeRemoved())
+	  this->state = GameOver();
+	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
+				      {
+					return entity.shouldBeRemoved();
+				      }), entities.end());
+	caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
+	      FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
       }, state);
   }
 
@@ -152,34 +158,41 @@ namespace logic
   {
   }
 
-  void Logic::handleEvent(Playing  &, sf::Event const &ev)
+  void Logic::handleEvent(Playing &state, sf::Event const &ev)
   {
     switch (ev.type)
       {
       case sf::Event::KeyPressed:
-	if (ev.key.code == sf::Keyboard::Key::W || ev.key.code == sf::Keyboard::Key::Z || ev.key.code == sf::Keyboard::Key::Up)
-	  getPlayer().jump();
-	else if (keyIsRight([&ev](auto key)
-			    {
-			      return ev.key.code == key;
-			    }))
-	  getPlayer().dash(3);
-	else if (keyIsLeft([&ev](auto key)
-			   {
-			     return ev.key.code == key;
-			   }))
-	  getPlayer().dash(-3);
+	if (keyIsPause([&ev](auto key)
+		       {
+			 return ev.key.code == key;
+		       }))
+	  state.pause ^= 1;
+	if (state.pause)
+	  {
+	  }
+	else
+	  {
+	    if (ev.key.code == sf::Keyboard::Key::W || ev.key.code == sf::Keyboard::Key::Z || ev.key.code == sf::Keyboard::Key::Up)
+	      getPlayer().jump();
+	    else if (keyIsRight([&ev](auto key)
+				{
+				  return ev.key.code == key;
+				}))
+	      getPlayer().dash(3);
+	    else if (keyIsLeft([&ev](auto key)
+			       {
+				 return ev.key.code == key;
+			       }))
+	      getPlayer().dash(-3);
+	  }
 	break;
       default:
 	break;
       }
   }
 
-  void Logic::handleEvent(Pause &, sf::Event const &)
-  {
-  }
-
-  std::variant<Playing, Pause, GameOver> const &Logic::getState() const noexcept
+  std::variant<Playing, GameOver> const &Logic::getState() const noexcept
   {
     return state;
   }
