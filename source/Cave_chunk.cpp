@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 #include "Cave_chunk.hpp"
+#include "logic/Logic.hpp"
 
 void CaveChunk::init(Vect<unsigned int, 2u> pos) noexcept
 {
@@ -16,7 +17,7 @@ void CaveChunk::init(Vect<unsigned int, 2u> pos) noexcept
       tile = Tile(TileType::Empty);
 }
 
-void CaveChunk::init(CaveChunk const &previous) noexcept
+void CaveChunk::init(CaveChunk const &previous, logic::Logic &logic) noexcept
 {
   auto nextRandomNumber([]() -> unsigned int
 			{
@@ -87,13 +88,14 @@ void CaveChunk::init(CaveChunk const &previous) noexcept
 		{
 		  for (unsigned int j(0u); j < thickness; ++j)
 		    getTile(lowPos + Vect<unsigned int, 2u>{j, i}) = Tile(TileType::Empty);
-		  if (i > lastPlateForm + 3 && i < target - 3 && !(nextRandomNumber() % 5))
+		  if (i >= lastPlateForm + 3 && i <= target - 3 && (nextRandomNumber() % (thickness) > 7))
 		    {
 		      lastPlateForm = i;
 		      unsigned int length(nextRandomNumber() % thickness);
 		      unsigned int begin(nextRandomNumber() % (thickness - length));
 		      for (unsigned int j(begin); j < begin + length; ++j)
 			getTile(lowPos + Vect<unsigned int, 2u>{j, i}) = Tile(TileType::Platform);
+		      logic.spawnZombie(pos * CHUNK_SIZE + lowPos + Vect<unsigned int, 2u>{begin, i});
 		    }
 		}
 	    }

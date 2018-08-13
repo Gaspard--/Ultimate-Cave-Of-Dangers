@@ -5,21 +5,24 @@
 
 size_t CaveMap::lastUsedChunk = 0;
 
-CaveMap::CaveMap()
+CaveMap::CaveMap(logic::Logic &logic)
   : firstChunk(1)
 {
   chunks[0].init({FixedPoint<0>{logic::SpawnPosX}.value / CHUNK_SIZE, 0});
   while (firstChunk)
-    genNextChunk();
+    genNextChunk(logic);
 }
 
-void CaveMap::genNextChunk()
+void CaveMap::genNextChunk(logic::Logic &logic)
 {
-  chunks[firstChunk].init(chunks[(chunks.size() + firstChunk - 1) % chunks.size()]);
+  CaveChunk &old(chunks[(chunks.size() + firstChunk - 1) % chunks.size()]);
+
+  logic.removeAllEntitiesInChunk(old.getPos());
+  chunks[firstChunk].init(old, logic);
   ++firstChunk %= chunks.size();
 }
 
-void CaveMap::regenIfNecessary(Vect<unsigned int, 2> position) noexcept
+void CaveMap::regenIfNecessary(Vect<unsigned int, 2> position, logic::Logic &logic) noexcept
 {
   Vect<unsigned int, 2> chunkPos(position / CHUNK_SIZE);
 
@@ -31,7 +34,7 @@ void CaveMap::regenIfNecessary(Vect<unsigned int, 2> position) noexcept
 	  std::cout << "currentChunk" << i << std::endl;
 	  while (i > 5)
 	    {
-	      genNextChunk();
+	      genNextChunk(logic);
 	      --i;
 	    }
 	  return ;

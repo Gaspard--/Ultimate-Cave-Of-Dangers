@@ -5,6 +5,11 @@
 
 #include "Cave_chunk.hpp"
 
+namespace logic
+{
+  class Logic;
+}
+
 class CaveMap
 {
 private:
@@ -14,12 +19,12 @@ private:
 
   static size_t lastUsedChunk;
 public:
-  CaveMap();
-  void genNextChunk();
+  CaveMap(logic::Logic &logic);
+  void genNextChunk(logic::Logic &logic);
 
   CaveChunk &getChunk(size_t index) noexcept;
   CaveChunk const &getChunk(size_t index) const noexcept;
-  void regenIfNecessary(Vect<unsigned int, 2> position) noexcept;
+  void regenIfNecessary(Vect<unsigned int, 2> position, logic::Logic &logic) noexcept;
 
   Tile &getTile(Vect<unsigned int, 2> position, size_t & = lastUsedChunk) noexcept;
   Tile const &getTile(Vect<unsigned int, 2> position, size_t & = lastUsedChunk) const noexcept;

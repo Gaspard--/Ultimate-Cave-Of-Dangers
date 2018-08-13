@@ -18,8 +18,9 @@ namespace logic
 
   Logic::Logic()
     : state(Playing{})
+    , caveMap(*this)
   {
-    entities.push_back(Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, 20});
+    entities.insert(entities.begin(), Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, 20});
   }
 
   Entity &Logic::getPlayer() noexcept
@@ -69,8 +70,21 @@ namespace logic
 					return entity.shouldBeRemoved();
 				      }), entities.end());
 	caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
-	      FixedPoint<0>(getPlayer().getPosition()[1]).value});
+	      FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
       }
+  }
+
+  void Logic::removeAllEntitiesInChunk(Vect<unsigned int, 2u> chunkPos)
+  {
+    Vect<FixedPoint<-8>, 2u> min(FixedPoint<0>(chunkPos[0] * CHUNK_SIZE), FixedPoint<0>(chunkPos[1] * CHUNK_SIZE));
+    Vect<FixedPoint<-8>, 2u> max(FixedPoint<0>((chunkPos[0] + 1) * CHUNK_SIZE), FixedPoint<0>((chunkPos[1] + 1) * CHUNK_SIZE));
+    entities.erase(std::remove_if(entities.begin(), entities.end(), [min, max](Entity &entity) noexcept
+				  {
+				    return (entity.getPosition()[0] > min[0] &&
+					    entity.getPosition()[1] > min[1] &&
+					    entity.getPosition()[0] > max[0] &&
+					    entity.getPosition()[1] > max[1]);
+				  }), entities.end());    
   }
 
   void Logic::handleEvent(const sf::Event& e)
@@ -120,5 +134,15 @@ namespace logic
   std::vector<Entity> const &Logic::getEntities() const noexcept
   {
     return entities;
+  }
+
+  void Logic::spawnZombie(Vect<unsigned int, 2u> floorPosition)
+  {
+    entities.push_back(Entity{
+	{
+	  FixedPoint<-16>::One * FixedPoint<0>(floorPosition[0]),
+	    FixedPoint<-16>::One  * FixedPoint<0>(floorPosition[1] + 1)
+	    },
+	  disp::TextureList::ZOMBIE, 20});
   }
 }
