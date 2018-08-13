@@ -22,6 +22,7 @@ namespace disp
     loadTexture(TextureList::BOARD, "./resources/board.png");
     loadTexture(TextureList::SHOT, "./resources/shot.png");
     loadTexture(TextureList::SPARKS, "./resources/sparks.png");
+    loadTexture(TextureList::HEALTH, "./resources/health.png");
     textures[TextureList::WALL].setRepeated(true);
     window.setVerticalSyncEnabled(true);
   }
@@ -167,25 +168,30 @@ namespace disp
   void Display::renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end)
   {
     for (auto entity = begin ; entity != end ; ++entity) {
+      Vect<unsigned, 2u> animFrame = Vect<unsigned, 2u>({1,1});
       Vect<unsigned, 2u> const &hps = entity->getHps();
-      unsigned animFrame = 2;
-      int dir = entity->getDir();
-      if (!dir)
-	dir = (entity->getSpeed()[0].getFloatValue() > 0.05f) - (entity->getSpeed()[0].getFloatValue() < -0.05f);
-      if (dir > 0) {
-	animFrame = 4;
-	if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
-	  animFrame = 3 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
-      }
-      else if (dir < 0) {
-	animFrame = 1;
-	if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
-	  animFrame = 0 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
-      }
+      if (entity->type == logic::EntityType::Zombie || entity->type == logic::EntityType::Player)
+	{
+	  animFrame[0] = 2;
+	  animFrame[1] = 5;
+	  int dir = entity->getDir();
+	  if (!dir)
+	    dir = (entity->getSpeed()[0].getFloatValue() > 0.05f) - (entity->getSpeed()[0].getFloatValue() < -0.05f);
+	  if (dir > 0) {
+	    animFrame[0] = 4;
+	    if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
+	      animFrame[0] = 3 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
+	  }
+	  else if (dir < 0) {
+	    animFrame[0] = 1;
+	    if (std::abs(entity->getSpeed()[1].getFloatValue()) < 0.05f)
+	      animFrame[0] = 0 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
+	  }
+	}
       Vect<float, 2u> position = renderSprite(textures[entity->getTexture()],
 					      camera.apply(Vect<float, 2u>::fromFixedPoint(entity->getPosition())), 0.0f,
 					      {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()},
-					      {1, 1}, {animFrame, 5});
+					      {1, 1}, animFrame);
       if (hps[1]) {
 	sf::RectangleShape hpBar({camera.zoom[0] * float(window.getSize().x) * entity->getSize()[0].getFloatValue(), 5.f});
 	sf::RectangleShape damageBar({hpBar.getSize().x * float(hps[1] - hps[0]) / float(hps[1]), hpBar.getSize().y});

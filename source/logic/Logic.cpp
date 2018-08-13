@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "logic/Logic.hpp"
+# include <cstdlib>
 
 namespace logic
 {
@@ -287,12 +288,20 @@ namespace logic
 
   void Logic::spawnTable(Vect<unsigned int, 2u> floorPosition)
   {
+    disp::TextureList texture;
+    unsigned rand = random();
+    texture = disp::TextureList::TABLE;
+    if (rand % 3 == 1)
+      texture = disp::TextureList::BARREL;
+    else if (rand % 3 == 2)
+      texture = disp::TextureList::MINEKART;
+
     entities.push_back(Entity{
 	{
 	  FixedPoint<-16>::One * FixedPoint<0>(floorPosition[0]),
 	    FixedPoint<-16>::One  * FixedPoint<0>(floorPosition[1])
 	    },
-	  disp::TextureList::TABLE,
+	  texture,
 	    EntityType::Table, 0});
   }
 

@@ -128,7 +128,7 @@ namespace logic
     if (type == EntityType::Zombie && hps[0] <= 0)
       {
 	type = EntityType::Pickup;
-	texture = disp::TextureList::BARREL;
+	texture = disp::TextureList::HEALTH;
 	size = {FixedPoint<-8>::One / 2_uFP, FixedPoint<-8>::One / 2_uFP};
 	hps = {0, 0};
 	speed[1] += FixedPoint<-8>{30};
@@ -174,12 +174,12 @@ namespace logic
     return false;
   }
 
-  Vect<unsigned, 2u> const& Entity::getHps() const noexcept
+  Vect<int, 2u> const& Entity::getHps() const noexcept
   {
     return hps;
   }
 
-  Vect<unsigned, 2u>& Entity::getHps() noexcept
+  Vect<int, 2u>& Entity::getHps() noexcept
   {
     return hps;
   }
@@ -207,7 +207,7 @@ namespace logic
 		}
 	    }
 	}
-	
+
       }
     if (bestIt != logic.getEntities().begin())
       {

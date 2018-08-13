@@ -30,7 +30,7 @@ namespace logic
     Vect<unsigned int, 2u> onWall;
     disp::TextureList texture;
     sf::Clock timer;
-    Vect<unsigned, 2u> hps;
+    Vect<int, 2u> hps;
     int dir;
   public:
     EntityType type;
@@ -51,7 +51,7 @@ namespace logic
     {
       return speed;
     }
-    
+
     sf::Clock const& getTimer() const noexcept;
 
     void setGrounded(unsigned int value) noexcept
@@ -69,8 +69,8 @@ namespace logic
       this->dir = dir;
     }
 
-    Vect<unsigned, 2u> const& getHps() const noexcept;
-    Vect<unsigned, 2u>& getHps() noexcept;
+    Vect<int, 2u> const& getHps() const noexcept;
+    Vect<int, 2u>& getHps() noexcept;
 
     disp::TextureList const & getTexture() const noexcept
     {
