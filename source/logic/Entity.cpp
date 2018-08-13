@@ -95,7 +95,8 @@ namespace logic
 	    unsigned int maxX(FixedPoint<0>(position[0] + size[0]).value + !!((position[0] + size[0]) % FixedPoint<-8, int>::One));
 	    for (unsigned int x(minX); x != maxX; ++x)
 	      {
-		if (logic.getMap().getTile({x, y}).isSolid())
+		Tile const &tile(logic.getMap().getTile({x, y}));
+		if (tile.isSolid() || (delta[1].isNegative() && tile.isSolidAbove()))
 		  {
 		    delta[1] = FixedPoint<-16>::Zero;
 		    speed[1] = FixedPoint<-16>::Zero;
