@@ -196,7 +196,7 @@ namespace logic
       {
 	bestIt->speed[0] += FixedPoint<-8, int>(32) * dir;
 	bestIt->speed[1] += FixedPoint<-8, int>(16);
-	bestIt->getHps() -= 1;
+	bestIt->getHps()[0] -= 1;
 	bestIt->setDir(-this->dir);
       }
     std::cout << "shooting" << std::endl;

@@ -186,6 +186,6 @@ namespace logic
 	  FixedPoint<-16>::One * FixedPoint<0>(floorPosition[0]),
 	    FixedPoint<-16>::One  * FixedPoint<0>(floorPosition[1] + 1)
 	    },
-	  disp::TextureList::ZOMBIE, 20});
+	  disp::TextureList::ZOMBIE, 6});
   }
 }
