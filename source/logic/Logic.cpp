@@ -78,7 +78,7 @@ namespace logic
 	      {
 		getPlayer().setDir(0);
 	      }
-	    
+
 	    state.shootCooldownLeft -= !!state.shootCooldownLeft;
 	    cameraPosition = (cameraPosition * 7_uFP + getPlayer().getPosition() * 1_uFP) / 8_uFP;
 	    for (auto it(entities.begin() + 1); it < entities.end(); ++it)
@@ -122,12 +122,18 @@ namespace logic
 	  }
 	for (Entity &entity : entities)
 	  entity.update(*this);
+	for (Anim &anim : animations)
+	  anim.update();
 	if (getPlayer().shouldBeRemoved())
 	  this->state = GameOver();
 	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
 				      {
 					return entity.shouldBeRemoved();
 				      }), entities.end());
+	animations.erase(std::remove_if(animations.begin(), animations.end(), [](Anim &anim) noexcept
+				      {
+					return anim.shouldBeRemoved();
+				      }), animations.end());
 	caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
 	      FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
       }, state);
@@ -214,5 +220,12 @@ namespace logic
 
   void Logic::showHit(Vect<FixedPoint<-8>, 2u> hitPosition)
   {
+    animations.push_back({hitPosition, 2.f, disp::TextureList::SPARKS, 5});
+    animations.push_back({getPlayer().getPosition(), 20.f, disp::TextureList::SPARKS, 5});
+  }
+
+  std::vector<Anim> const &Logic::getAnimations() const noexcept
+  {
+    return (animations);
   }
 }
