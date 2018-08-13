@@ -62,7 +62,15 @@ namespace logic
       getPlayer().drift(-3);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
       {
-	if (!getPlayer().getDir())
+	if (keyIsLeft([](auto key){
+	  return sf::Keyboard::isKeyPressed(key);
+	    }))
+	  getPlayer().setDir(-1);
+	else if (keyIsRight([](auto key){
+	  return sf::Keyboard::isKeyPressed(key);
+	    }))
+	  getPlayer().setDir(-1);
+	else if (!getPlayer().getDir())
 	  getPlayer().setDir(getPlayer().getSpeed()[0].isPositive() - getPlayer().getSpeed()[0].isNegative());
 	if (!state.shootCooldownLeft)
 	  {
@@ -115,9 +123,7 @@ namespace logic
 	    if (waterLevel < getPlayer().getPosition()[1])
 	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) / 256_uFP);
 	  }
-        waterLevel += FixedPoint<-8>{16u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
-	for (Entity &entity : entities)
-	  entity.update(*this);
+        waterLevel += FixedPoint<-8>{8u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 12.0f)};
 	for (auto it(entities.begin() + 1); it < entities.end(); ++it)
 	  {
 	    Entity &entity(*it);
@@ -132,8 +138,8 @@ namespace logic
 		{
 		case EntityType::Zombie:
 		  {
-		    Vect<FixedPoint<-8, int>, 2u> impulse(getPlayer().getPosition() - entity.getPosition());
-		    FixedPoint<-8, int> length(int(std::sqrt(float(impulse.length2().value))));
+		    Vect<FixedPoint<-16, int>, 2u> impulse(getPlayer().getPosition() - entity.getPosition());
+		    FixedPoint<-16, int> length(int(std::sqrt(float(impulse.length2().value))));
 		    if (!!length)
 		      {
 			impulse *= 2_FP;
@@ -148,6 +154,8 @@ namespace logic
 		  {
 		    entity.getHps()[0] = 0;
 		    getPlayer().getHps()[0] += 5;
+		    if (getPlayer().getHps()[0] > getPlayer().getHps()[1])
+		      getPlayer().getHps()[0] = getPlayer().getHps()[1];
 		  }
 		  break;
 		}
@@ -158,13 +166,15 @@ namespace logic
 	--waterDamageCooldown;
 	for (Entity &entity : entities)
 	  if (entity.floats() &&entity.getPosition()[1] < waterLevel)
-	    entity.getSpeed()[1] += FixedPoint<-8>{12};
+	    entity.getSpeed()[1] += FixedPoint<-8>{9};
 	  else if (!waterDamageCooldown && entity.getPosition()[1] + entity.getSize()[1] < waterLevel)
 	    entity.getHps()[0] -= 1;
 	if (!waterDamageCooldown)
 	  waterDamageCooldown = 30;
 	for (Anim &anim : animations)
 	  anim.update();
+	for (Entity &entity : entities)
+	  entity.update(*this);
 	if (getPlayer().shouldBeRemoved())
 	  this->state = GameOver();
 	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
