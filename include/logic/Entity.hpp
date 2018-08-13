@@ -17,7 +17,8 @@ namespace logic
     {
       Player,
       Zombie,
-      Pickup
+      Pickup,
+      Table
     };
 
   class Entity
@@ -53,6 +54,11 @@ namespace logic
     
     sf::Clock const& getTimer() const noexcept;
 
+    void setGrounded(unsigned int value) noexcept
+    {
+      grounded = value;
+    }
+
     int getDir() const noexcept
     {
       return dir;
@@ -81,9 +87,9 @@ namespace logic
       return size;
     }
 
-    bool floats()
+    bool floats() const noexcept
     {
-      return type == EntityType::Pickup;
+      return type == EntityType::Pickup || type == EntityType::Table;
     }
   };
 };

@@ -6,7 +6,7 @@ namespace logic
 
   Entity::Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList texture, EntityType type, unsigned maxHps)
     : position(position)
-    , size(FixedPoint<0>(1), FixedPoint<0>(2))
+    , size(type == EntityType::Table ? 2_uFP : 1_uFP, 2_uFP)
     , grounded(0)
     , texture(texture)
     , hps({maxHps, maxHps})
@@ -194,26 +194,30 @@ namespace logic
     for (auto it(logic.getEntities().begin() + 1); it < logic.getEntities().end(); ++it)
       {
 	Entity &entity(*it);
-	if (entity.type != EntityType::Zombie)
-	  continue ;
-	if (entity.getPosition()[1] < height &&
-	    entity.getPosition()[1] + entity.getSize()[1] > height)
-	  {
-	    FixedPoint<-8, int> diff(FixedPoint<-8, int>(entity.getPosition()[0] - position[0]) * dir);
+	if (entity.type == EntityType::Zombie || entity.type == EntityType::Table) {
+	  if (entity.getPosition()[1] < height &&
+	      entity.getPosition()[1] + entity.getSize()[1] > height)
+	    {
+	      FixedPoint<-8, int> diff(FixedPoint<-8, int>(entity.getPosition()[0] - position[0]) * dir);
 
-	    if (diff.isPositive() && diff < closestPos)
-	      {
-		bestIt = it;
-		closestPos = diff;
-	      }
-	  }
+	      if (diff.isPositive() && diff < closestPos)
+		{
+		  bestIt = it;
+		  closestPos = diff;
+		}
+	    }
+	}
+	
       }
     if (bestIt != logic.getEntities().begin())
       {
 	bestIt->speed[0] += FixedPoint<-8, int>(32) * dir;
 	bestIt->speed[1] += FixedPoint<-8, int>(16);
-	bestIt->getHps()[0] -= 1;
-	bestIt->setDir(-this->dir);
+	if (bestIt->getHps()[1])
+	  {
+	    bestIt->getHps()[0] -= 1;
+	    bestIt->setDir(-this->dir);
+	  }
       }
     std::cout << "shooting" << std::endl;
     speed[0] -= FixedPoint<-8, int>(16) * dir;

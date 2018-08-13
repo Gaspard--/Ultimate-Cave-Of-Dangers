@@ -73,8 +73,12 @@ void CaveChunk::init(CaveChunk const &previous, logic::Logic &logic) noexcept
 		last = true;
 	      }
 	    for (unsigned int i(0u); i < target + 1; ++i)
-	      for (unsigned int j(0u); j < thickness; ++j)
-		getTile(lowPos + Vect<unsigned int, 2u>{-i, j}) = Tile(TileType::Empty);
+	      {
+		if (!(nextRandomNumber() % 7))
+		  logic.spawnTable(pos * CHUNK_SIZE + lowPos + Vect<unsigned int, 2u>{-i, 0});
+		for (unsigned int j(0u); j < thickness; ++j)
+		  getTile(lowPos + Vect<unsigned int, 2u>{-i, j}) = Tile(TileType::Empty);
+	      }
 	    break;
 	  case ExitDirection::Up:
 	    if (target >= CHUNK_SIZE - lowPos[1])
@@ -107,8 +111,13 @@ void CaveChunk::init(CaveChunk const &previous, logic::Logic &logic) noexcept
 		last = true;
 	      }
 	    for (unsigned int i(0u); i < target; ++i)
-	      for (unsigned int j(0u); j < thickness; ++j)
-		getTile(lowPos + Vect<unsigned int, 2u>{i, j}) = Tile(TileType::Empty);
+	      {
+		if (!(nextRandomNumber() % 7))
+		  logic.spawnTable(pos * CHUNK_SIZE + lowPos + Vect<unsigned int, 2u>{-i, 0});
+
+		for (unsigned int j(0u); j < thickness; ++j)
+		  getTile(lowPos + Vect<unsigned int, 2u>{i, j}) = Tile(TileType::Empty);
+	      }
 	    break;
 	  }
 	if (last)
