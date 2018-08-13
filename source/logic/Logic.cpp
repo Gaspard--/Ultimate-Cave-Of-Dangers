@@ -87,7 +87,6 @@ namespace logic
 
   void Logic::update()
   {
-    waterLevel = FixedPoint<0>(0);
     std::visit([this](auto &state) noexcept(!std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
 	if constexpr (std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
 	    if (state.pause)
