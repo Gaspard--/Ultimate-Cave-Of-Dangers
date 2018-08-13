@@ -19,6 +19,7 @@ namespace logic
   Logic::Logic()
     : state(Playing{})
     , caveMap(*this)
+    , waterDamageCooldown(30)
   {
     entities.insert(entities.begin(), Entity{{FixedPoint<-16>{SpawnPosX}, FixedPoint<-16>::One}, disp::TextureList::BOB, 20});
   }
@@ -105,8 +106,17 @@ namespace logic
 	    if (waterLevel < getPlayer().getPosition()[1])
 	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) / 256_uFP);
 	    std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
+	    if (!--waterDamageCooldown)
+	      {
+		for (Entity &entity : entities)
+		  if (entity.getPosition()[1] + entity.getSize()[1] < waterLevel)
+		    entity.getHps()[0] -= 1;
+		waterDamageCooldown = 30;
+	      }
 	    for (Entity &entity : entities)
 	      entity.update(*this);
+	    if (getPlayer().shouldBeRemoved())
+	      this->state = GameOver();
 	    entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
 					  {
 					    return entity.shouldBeRemoved();

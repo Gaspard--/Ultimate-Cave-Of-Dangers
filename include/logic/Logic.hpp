@@ -35,6 +35,7 @@ namespace logic
     std::vector<Entity> entities;
     Vect<FixedPoint<-8>, 2u> cameraPosition;
     FixedPoint<-8> waterLevel;
+    unsigned int waterDamageCooldown;
 
     std::variant<Playing, Pause, GameOver> state;
     CaveMap caveMap;
