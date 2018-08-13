@@ -30,6 +30,7 @@ namespace logic
   {
   private:
     std::vector<Entity> entities;
+    
     Vect<FixedPoint<-8>, 2u> cameraPosition;
     FixedPoint<-8> waterLevel;
     unsigned int waterDamageCooldown;
