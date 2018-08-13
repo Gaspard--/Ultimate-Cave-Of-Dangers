@@ -156,6 +156,7 @@ namespace logic
 		case EntityType::Pickup:
 		  {
 		    entity.getHps()[0] = 0;
+		    entity.getHps()[1] = 1;
 		    getPlayer().getHps()[0] += 5;
 		    if (getPlayer().getHps()[0] > getPlayer().getHps()[1])
 		      getPlayer().getHps()[0] = getPlayer().getHps()[1];
@@ -188,9 +189,10 @@ namespace logic
 	  entity.update(*this);
 	if (getPlayer().shouldBeRemoved())
 	  this->state = GameOver();
-	else
-	  caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
-		FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
+	if constexpr (std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
+	    caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
+		  FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
+	  }
 	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
 				      {
 					return entity.shouldBeRemoved();

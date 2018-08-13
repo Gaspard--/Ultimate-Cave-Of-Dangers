@@ -130,7 +130,7 @@ namespace logic
 	type = EntityType::Pickup;
 	texture = disp::TextureList::BARREL;
 	size = {FixedPoint<-8>::One / 2_uFP, FixedPoint<-8>::One / 2_uFP};
-	hps = {1, 1};
+	hps = {0, 0};
 	speed[1] += FixedPoint<-8>{30};
       }
   }
