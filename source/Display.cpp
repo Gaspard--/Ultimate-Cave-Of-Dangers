@@ -203,40 +203,18 @@ namespace disp
       }
   }
 
-  void Display::renderWater(std::vector<logic::WaterDrop>::const_iterator const &begin, std::vector<logic::WaterDrop>::const_iterator const &end)
+  void Display::renderWater(FixedPoint<-8> waterLevel)
   {
-    std::vector<float> data;
-
-    data.reserve(std::distance(begin, end) * 6 * 4);
-    auto dest(std::back_inserter(data));
-    for (auto it(begin); it < end; ++it)
-      {
-	for (Vect<float, 2> corner : std::array<Vect<float, 2>, 6>{{
-	    {-1.0f, -1.0f},
-	      {1.0f, -1.0f},
-		{-1.0f, 1.0f},
-		  {-1.0f, 1.0f},
-		    {1.0f, -1.0f},
-		      {1.0f, 1.0f}}})
-	  {
-	    auto position(camera.apply(Vect<float, 2u>{it->position[0].getFloatValue(), it->position[1].getFloatValue()}));
-	    for (uint32_t dir(0u); dir != 2; ++dir)
-	      ++dest = position[dir] - corner[dir] * logic::WaterDropSize.getFloatValue();
-	    for (uint32_t dir(0u); dir != 2; ++dir)
-	      ++dest = corner[dir];
-	  }
-      }
-    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
-    glDrawArrays(GL_TRIANGLES, 0, GLsizei(std::distance(begin, end) * 4));
   }
 
   void Display::render(logic::Logic const &logic)
   {
-    //renderWater(logic.getWaterDrops().begin(), logic.getWaterDrops().end());
-    window.clear();
     Vect<float, 2u> oldCameraPos = camera.offset;
     camera.offset = Vect<float, 2u>::fromFixedPoint(logic.getCameraPosition());
     camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
+ 
+    window.clear();
+    renderWater(logic.getWaterLevel());
     renderParalax(camera.offset - oldCameraPos);
     renderMap(logic.getMap());
     renderEntities(logic.getEntities().begin(), logic.getEntities().end());

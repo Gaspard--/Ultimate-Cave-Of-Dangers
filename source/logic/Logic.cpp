@@ -1,7 +1,6 @@
 #include <algorithm>
 
 #include "logic/Logic.hpp"
-#include "logic/Physics.hpp"
 
 namespace logic
 {
@@ -21,10 +20,6 @@ namespace logic
     : state(Playing{})
   {
     entities.push_back({disp::TextureList::BOB, 20});
-    for (unsigned int i(0u); i < 4; ++i)
-      for (unsigned int j(0u); j < 4; ++j)
-	waterDrops.push_back({{FixedPoint<-8>(i * 128), FixedPoint<-8>(j * 128)},
-	      {FixedPoint<-16, int>(i), FixedPoint<-16, int>(j)}});
   }
 
   Entity &Logic::getPlayer() noexcept
@@ -69,10 +64,6 @@ namespace logic
 				      {
 					return entity.shouldBeRemoved();
 				      }), entities.end());
-	if (!waterDrops.empty())
-	  checkCollisions(waterDrops.begin(), waterDrops.end());
-	for (WaterDrop &waterDrop : waterDrops)
-	  waterDrop.update();
       }
   }
 

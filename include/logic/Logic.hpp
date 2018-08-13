@@ -27,25 +27,12 @@ namespace logic
 
   static constexpr FixedPoint<-8> WaterDropSize{FixedPoint<-8>::One};
 
-  struct WaterDrop
-  {
-    Vect<FixedPoint<-8>, 2u> position;
-    Vect<FixedPoint<-16>, 2u> speed;
-
-    void update() noexcept
-    {
-      position += speed;
-      std::cout << "pos[0]: " << position[0].getFloatValue() << std::endl;
-      std::cout << "speed[0]: " <<  speed[0].getFloatValue() << std::endl;
-    }
-  };
-
   class Logic
   {
   private:
     std::vector<Entity> entities;
-    std::vector<WaterDrop> waterDrops;
     Vect<FixedPoint<-8>, 2u> cameraPosition;
+    FixedPoint<-8> waterLevel;
 
     std::variant<Playing, Pause, GameOver> state;
     CaveMap caveMap;
@@ -64,9 +51,10 @@ namespace logic
     CaveMap &getMap() noexcept;
     
     CaveMap const &getMap() const noexcept;
-    std::vector<WaterDrop> const &getWaterDrops() const noexcept
+
+    FixedPoint<-8> getWaterLevel() const noexcept
     {
-      return waterDrops;
+      return waterLevel;
     }
 
     std::variant<Playing, Pause, GameOver> const &getState() const noexcept;
