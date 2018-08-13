@@ -19,9 +19,9 @@ void CaveChunk::init(Vect<unsigned int, 2u> pos) noexcept
 void CaveChunk::init(CaveChunk const &previous) noexcept
 {
   auto nextRandomNumber([]() -> unsigned int
-  {
-    return random();
-  });
+			{
+			  return random();
+			});
   for (auto &line : tiles)
     for (auto &tile : line)
       tile = Tile(TileType::Wall);
@@ -81,9 +81,22 @@ void CaveChunk::init(CaveChunk const &previous) noexcept
 		target = CHUNK_SIZE - lowPos[1];
 		last = true;
 	      }
-	    for (unsigned int i(0u); i < target; ++i)
-	      for (unsigned int j(0u); j < thickness; ++j)
-		getTile(lowPos + Vect<unsigned int, 2u>{j, i}) = Tile(TileType::Empty);
+	    {
+	      int lastPlateForm(0u);
+	      for (unsigned int i(0u); i < target; ++i)
+		{
+		  for (unsigned int j(0u); j < thickness; ++j)
+		    getTile(lowPos + Vect<unsigned int, 2u>{j, i}) = Tile(TileType::Empty);
+		  if (i > lastPlateForm + 3 && i < target - 3 && !(nextRandomNumber() % 5))
+		    {
+		      lastPlateForm = i;
+		      unsigned int length(nextRandomNumber() % thickness);
+		      unsigned int begin(nextRandomNumber() % (thickness - length));
+		      for (unsigned int j(begin); j < begin + length; ++j)
+			getTile(lowPos + Vect<unsigned int, 2u>{j, i}) = Tile(TileType::Platform);
+		    }
+		}
+	    }
 	    break;
 	  case ExitDirection::Right:
 	    if (target >= CHUNK_SIZE - lowPos[0])
@@ -143,9 +156,6 @@ void CaveChunk::print() const
 	      break;
 	    case TileType::Wall:
 	      std::cout << 'W';
-	      break;
-	    case TileType::Entry:
-	      std::cout << 'E';
 	      break;
 	    case TileType::Platform:
 	      std::cout << '_';

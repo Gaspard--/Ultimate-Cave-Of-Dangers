@@ -140,6 +140,8 @@ namespace disp
 		renderWallGroup(int(x + minX - 1), int(y + minY - 2), wallCount);
 		wallCount = 0;
 	      }
+	    if (tiles[x][y] == TileType::Platform)
+	      renderSprite(textures[TextureList::CAVE_TILE], camera.apply(Vect<int, 2u>(int(x + minX - 1), int(y + minY - 1))), 0.0f);
 	  }
 	if (wallCount)
 	  {
