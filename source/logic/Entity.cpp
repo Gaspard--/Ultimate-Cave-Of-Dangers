@@ -4,12 +4,13 @@
 namespace logic
 {
 
-  Entity::Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList texture, unsigned maxHps)
+  Entity::Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList texture, EntityType type, unsigned maxHps)
     : position(position)
     , size(FixedPoint<0>(1), FixedPoint<0>(2))
     , grounded(0)
     , texture(texture)
     , hps({maxHps, maxHps})
+    , type(type)
     , dir(0)
   {
   }
@@ -124,6 +125,14 @@ namespace logic
     grounded -= !!grounded;
     onWall -= !!onWall;
     speed *= FixedPoint<-6, int>{63};
+    if (type == EntityType::Zombie && hps[0] <= 0)
+      {
+	type = EntityType::Pickup;
+	texture = disp::TextureList::BARREL;
+	size = {FixedPoint<-8>::One / 2_uFP, FixedPoint<-8>::One / 2_uFP};
+	hps = {1, 1};
+	speed[1] += FixedPoint<-8>{30};
+      }
   }
 
   void Entity::jump() noexcept
@@ -160,7 +169,7 @@ namespace logic
 
   bool Entity::shouldBeRemoved() const noexcept
   {
-    if (hps[1] && !hps[0])
+    if (hps[1] && hps[0] <= 0)
       return true;
     return false;
   }
@@ -185,6 +194,8 @@ namespace logic
     for (auto it(logic.getEntities().begin() + 1); it < logic.getEntities().end(); ++it)
       {
 	Entity &entity(*it);
+	if (entity.type != EntityType::Zombie)
+	  continue ;
 	if (entity.getPosition()[1] < height &&
 	    entity.getPosition()[1] + entity.getSize()[1] > height)
 	  {

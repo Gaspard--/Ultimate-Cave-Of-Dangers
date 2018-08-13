@@ -71,5 +71,6 @@ namespace logic
     void removeAllEntitiesInChunk(Vect<unsigned int, 2u> chunkPos);
     void spawnZombie(Vect<unsigned int, 2u> floorPosition);
     void showHit(Vect<FixedPoint<-8>, 2u>);
+    void checkInputs(Playing &state);
   };
 };

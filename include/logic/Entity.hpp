@@ -13,6 +13,13 @@ namespace logic
 {
   class Logic;
 
+  enum class EntityType
+    {
+      Player,
+      Zombie,
+      Pickup
+    };
+
   class Entity
   {
     Vect<FixedPoint<-8>, 2u> position;
@@ -25,7 +32,9 @@ namespace logic
     Vect<unsigned, 2u> hps;
     int dir;
   public:
-    Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList, unsigned maxHps = 0);
+    EntityType type;
+
+    Entity(Vect<FixedPoint<-8>, 2u> position, disp::TextureList, EntityType type, unsigned maxHps = 0);
 
     void updatePosition(Logic &);
     void update(Logic &);
@@ -36,6 +45,12 @@ namespace logic
     bool shouldBeRemoved() const noexcept;
 
     Vect<FixedPoint<-16, int>, 2u> const& getSpeed() const noexcept;
+
+    Vect<FixedPoint<-16, int>, 2u> & getSpeed() noexcept
+    {
+      return speed;
+    }
+    
     sf::Clock const& getTimer() const noexcept;
 
     int getDir() const noexcept
@@ -64,6 +79,11 @@ namespace logic
     Vect<FixedPoint<-8>, 2u> const &getSize() const noexcept
     {
       return size;
+    }
+
+    bool floats()
+    {
+      return type == EntityType::Pickup;
     }
   };
 };

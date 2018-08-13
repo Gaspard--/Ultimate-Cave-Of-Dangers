@@ -200,7 +200,7 @@ public:
 
   Vect<T, dim> normalized() const
   {
-    return length2() > 0 ? ((*this) / sqrt(length2())) : *this;
+    return length2() > T{0} ? ((*this) / sqrt(length2())) : *this;
   }
 
 #define VECT_NAMED_COMPONENT(NAME, INDEX)				\
