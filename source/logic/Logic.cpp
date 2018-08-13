@@ -101,9 +101,9 @@ namespace logic
 	      }
 	  }
         if constexpr (!std::is_same_v<std::decay_t<decltype(state)>, Pause>) {
-	    waterLevel += FixedPoint<-8>{8u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
+	    waterLevel += FixedPoint<-8>{16u + uint32_t(sin(waterLevel.getFloatValue() * 0.1f) * 4.0f)};
 	    if (waterLevel < getPlayer().getPosition()[1])
-	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) * 1_uFP / 128_uFP);
+	      waterLevel += ((getPlayer().getPosition()[1] - waterLevel) / 256_uFP);
 	    std::cout << "Water level: " << waterLevel.getFloatValue() << std::endl;
 	    for (Entity &entity : entities)
 	      entity.update(*this);
