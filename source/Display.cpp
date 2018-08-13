@@ -155,12 +155,12 @@ namespace disp
       Vect<unsigned, 2u> const &hps = entity->getHps();
       unsigned animFrame = 2;
       if (entity->getspeed()[0].getFloatValue() > 0.05f) {
-	animFrame = 3;
+	animFrame = 4;
 	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 3 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
       }
       else if (entity->getspeed()[0].getFloatValue() < -0.05f) {
-	animFrame = 0;
+	animFrame = 1;
 	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
 	  animFrame = 0 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
       }
@@ -235,7 +235,7 @@ namespace disp
     Vect<float, 2u> oldCameraPos = camera.offset;
     camera.offset = Vect<float, 2u>::fromFixedPoint(logic.getCameraPosition());
     camera.zoom = {1 / 64.0f, 1 / 64.0f * float(window.getSize().x) / float(window.getSize().y)};
- 
+
     window.clear();
     renderWater(logic.getWaterLevel());
     renderParalax(camera.offset - oldCameraPos);
