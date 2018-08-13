@@ -201,5 +201,6 @@ namespace logic
       }
     std::cout << "shooting" << std::endl;
     speed[0] -= FixedPoint<-8, int>(16) * dir;
+    logic.showHit({position[0] + closestPos, height});
   }
 }
