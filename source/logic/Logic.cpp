@@ -97,27 +97,30 @@ namespace logic
 	    for (auto it(entities.begin() + 1); it < entities.end(); ++it)
 	      {
 		Entity &entity(*it);
-		int dir(entity.getSpeed()[0].isPositive() * 2 - 1);
-		if (int faceDir = entity.getDir())
+		if (entity.type == EntityType::Zombie)
 		  {
-		    entity.drift(faceDir);
-		    if (faceDir != dir)
-		      entity.dash(faceDir);
-		    else
-		      entity.setDir(0);
-		  }
-		else
-		  {
-		    FixedPoint<0> nextX((FixedPoint<0>(entity.getPosition()[0] + FixedPoint<-8, int>(entity.getSpeed()[0]) * 5_FP) + FixedPoint<0>(entity.getSpeed()[0].isPositive())).value);
-
-		    if (!caveMap.getTile({nextX.value, FixedPoint<0>(entity.getPosition()[1]).value}).isSolid() && // turn around if running into a wall
-			caveMap.getTile({nextX.value, (FixedPoint<0>(entity.getPosition()[1]) - 1_uFP).value}).isSolidAbove()) // turn around if about to fall
+		    int dir(entity.getSpeed()[0].isPositive() * 2 - 1);
+		    if (int faceDir = entity.getDir())
 		      {
-			entity.drift(dir);
+			entity.drift(faceDir);
+			if (faceDir != dir)
+			  entity.dash(faceDir);
+			else
+			  entity.setDir(0);
 		      }
 		    else
 		      {
-			entity.dash(-dir);
+			FixedPoint<0> nextX((FixedPoint<0>(entity.getPosition()[0] + FixedPoint<-8, int>(entity.getSpeed()[0]) * 5_FP) + FixedPoint<0>(entity.getSpeed()[0].isPositive())).value);
+
+			if (!caveMap.getTile({nextX.value, FixedPoint<0>(entity.getPosition()[1]).value}).isSolid() && // turn around if running into a wall
+			    caveMap.getTile({nextX.value, (FixedPoint<0>(entity.getPosition()[1]) - 1_uFP).value}).isSolidAbove()) // turn around if about to fall
+			  {
+			    entity.drift(dir);
+			  }
+			else
+			  {
+			    entity.dash(-dir);
+			  }
 		      }
 		  }
 	      }
@@ -154,10 +157,19 @@ namespace logic
 		case EntityType::Pickup:
 		  {
 		    entity.getHps()[0] = 0;
+		    entity.getHps()[1] = 1;
 		    getPlayer().getHps()[0] += 5;
 		    if (getPlayer().getHps()[0] > getPlayer().getHps()[1])
 		      getPlayer().getHps()[0] = getPlayer().getHps()[1];
 		  }
+		  break;
+		case EntityType::Table:
+		  if (getPlayer().getPosition()[1] - FixedPoint<-8>(getPlayer().getSpeed()[1]) >
+		      entity.getPosition()[1] + entity.getSize()[1] - FixedPoint<-8>(entity.getSpeed()[1]))
+		    {
+		      getPlayer().setGrounded(10);
+		      getPlayer().getSpeed()[1] = entity.getSpeed()[1] - getPlayer().getSpeed()[1] * 2_FP;
+		    }
 		  break;
 		}
 	    }
@@ -178,6 +190,10 @@ namespace logic
 	  entity.update(*this);
 	if (getPlayer().shouldBeRemoved())
 	  this->state = GameOver();
+	if constexpr (std::is_same_v<std::decay_t<decltype(state)>, Playing>) {
+	    caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
+		  FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
+	  }
 	entities.erase(std::remove_if(entities.begin(), entities.end(), [](Entity &entity) noexcept
 				      {
 					return entity.shouldBeRemoved();
@@ -186,8 +202,6 @@ namespace logic
 				      {
 					return anim.shouldBeRemoved();
 				      }), animations.end());
-	caveMap.regenIfNecessary({FixedPoint<0>(getPlayer().getPosition()[0]).value,
-	      FixedPoint<0>(getPlayer().getPosition()[1]).value}, *this);
       }, state);
   }
 
@@ -270,6 +284,17 @@ namespace logic
 	    },
 	  disp::TextureList::ZOMBIE,
 	    EntityType::Zombie, 6});
+  }
+
+  void Logic::spawnTable(Vect<unsigned int, 2u> floorPosition)
+  {
+    entities.push_back(Entity{
+	{
+	  FixedPoint<-16>::One * FixedPoint<0>(floorPosition[0]),
+	    FixedPoint<-16>::One  * FixedPoint<0>(floorPosition[1])
+	    },
+	  disp::TextureList::TABLE,
+	    EntityType::Table, 0});
   }
 
   void Logic::showHit(Vect<FixedPoint<-8>, 2u> hitPosition)
