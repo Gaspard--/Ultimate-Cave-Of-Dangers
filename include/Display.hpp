@@ -10,12 +10,14 @@
 # include "Vect.hpp"
 # include "Camera.hpp"
 # include "my_opengl.hpp"
+# include "logic/Anim.hpp"
 
 namespace logic
 {
   class Logic;
   class Entity;
   struct WaterDrop;
+  class Anim;
 }
 
 class CaveMap;
@@ -62,6 +64,7 @@ namespace disp
     void renderMap(CaveMap const &);
     void renderWater(FixedPoint<-8> waterLevel);
     void renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end);
+    void renderAnims(std::vector<logic::Anim>::const_iterator const &begin, std::vector<logic::Anim>::const_iterator const &end);
     void renderParalax(Vect<float, 2u> const &movement);
 
     Vect<float, 2u> paralaxPos;

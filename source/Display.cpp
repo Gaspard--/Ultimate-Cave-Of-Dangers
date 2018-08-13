@@ -67,7 +67,7 @@ namespace disp
     position += Vect<float, 2u>(0.5f, -0.5f);
     position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
     position -= Vect<float, 2u>(camera.zoom[0] * float(window.getSize().x) * size[0] / 2.f,
-	camera.zoom[1] * float(window.getSize().y) * size[1] / 2.f);
+				camera.zoom[1] * float(window.getSize().y) * size[1] / 2.f);
     sprite.setPosition(position[0], position[1]);
     window.draw(sprite);
     return (position);
@@ -89,9 +89,9 @@ namespace disp
     }
 
     auto renderWallGroup([this](int x, int y, unsigned int wallCount)
-    {
-      renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(x, y)), 0.0f, {1.0f, 1.0f}, {1, int(wallCount)});
-    });
+			 {
+			   renderSprite(textures[TextureList::WALL], camera.apply(Vect<int, 2u>(x, y)), 0.0f, {1.0f, 1.0f}, {1, int(wallCount)});
+			 });
 
     for (unsigned x = 1 ; x != maxX - minX + 1; ++x)
       {
@@ -152,6 +152,16 @@ namespace disp
 	    wallCount = 0;
 	  }
       }
+  }
+
+  void Display::renderAnims(std::vector<logic::Anim>::const_iterator const &begin, std::vector<logic::Anim>::const_iterator const &end)
+  {
+    for (auto anim = begin ; anim != end ; ++anim) {
+      renderSprite(textures[anim->getTexture()],
+		  camera.apply(Vect<float, 2u>::fromFixedPoint(anim->getPosition())), 0.0f,
+		  {1.f, 1.f},
+		  {1, 1}, anim->getAnimationPosition());
+    }
   }
 
   void Display::renderEntities(std::vector<logic::Entity>::const_iterator const &begin, std::vector<logic::Entity>::const_iterator const &end)
@@ -263,6 +273,7 @@ namespace disp
 
     renderParalax(camera.offset - oldCameraPos);
     renderEntities(logic.getEntities().begin(), logic.getEntities().end());
+    renderAnims(logic.getAnimations().begin(), logic.getAnimations().end());
     renderWater(logic.getWaterLevel());
     renderMap(logic.getMap());
     window.display();

@@ -9,6 +9,8 @@
 
 #include <SFML/Graphics.hpp>
 
+# include "logic/Anim.hpp"
+
 namespace logic
 {
   class Entity;
@@ -30,7 +32,7 @@ namespace logic
   {
   private:
     std::vector<Entity> entities;
-    
+    std::vector<Anim> animations;
     Vect<FixedPoint<-8>, 2u> cameraPosition;
     FixedPoint<-8> waterLevel;
     unsigned int waterDamageCooldown;
@@ -49,7 +51,7 @@ namespace logic
     Entity const &getPlayer() const noexcept;
 
     CaveMap &getMap() noexcept;
-    
+
     CaveMap const &getMap() const noexcept;
 
     FixedPoint<-8> getWaterLevel() const noexcept
@@ -59,6 +61,7 @@ namespace logic
 
     std::variant<Playing, GameOver> const &getState() const noexcept;
     std::vector<Entity> const &getEntities() const noexcept;
+    std::vector<Anim> const &getAnimations() const noexcept;
     std::vector<Entity> &getEntities() noexcept
     {
       return entities;

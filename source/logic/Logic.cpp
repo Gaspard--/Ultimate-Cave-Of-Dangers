@@ -81,7 +81,7 @@ namespace logic
     else if (!state.shootCooldownLeft)
       {
 	getPlayer().setDir(0);
-      }	    
+      }
     state.shootCooldownLeft -= !!state.shootCooldownLeft;
   }
 
@@ -182,9 +182,10 @@ namespace logic
 	    entity.getHps()[0] -= 1;
 	if (!waterDamageCooldown)
 	  waterDamageCooldown = 30;
+	for (Anim &anim : animations)
+	  anim.update();
 	for (Entity &entity : entities)
 	  entity.update(*this);
-      
 	if (getPlayer().shouldBeRemoved())
 	  this->state = GameOver();
 	else
@@ -194,6 +195,10 @@ namespace logic
 				      {
 					return entity.shouldBeRemoved();
 				      }), entities.end());
+	animations.erase(std::remove_if(animations.begin(), animations.end(), [](Anim &anim) noexcept
+				      {
+					return anim.shouldBeRemoved();
+				      }), animations.end());
       }, state);
   }
 
@@ -220,7 +225,7 @@ namespace logic
 
   void Logic::handleEvent(GameOver &, sf::Event const &)
   {
-    
+
   }
 
   void Logic::handleEvent(Playing &state, sf::Event const &ev)
@@ -291,5 +296,12 @@ namespace logic
 
   void Logic::showHit(Vect<FixedPoint<-8>, 2u> hitPosition)
   {
+    animations.push_back({hitPosition, 20.f, disp::TextureList::SPARKS, 5});
+    animations.push_back({getPlayer().getPosition(), 20.f, disp::TextureList::SHOT, 5});
+  }
+
+  std::vector<Anim> const &Logic::getAnimations() const noexcept
+  {
+    return (animations);
   }
 }
