@@ -7,14 +7,14 @@ namespace disp
     window(sf::VideoMode(1920, 1080), "Ultime Cave of Dangers")
   {
     /* load all textures here */
-    loadTexture(TextureList::LEGACY, "./resources/planet.bmp");
     loadTexture(TextureList::CAVE_TILE, "./resources/cave_tile.png");
     loadTexture(TextureList::MINEKART, "./resources/minekart.png");
     loadTexture(TextureList::BARREL, "./resources/barrel.png");
     loadTexture(TextureList::CORNER, "./resources/corner.png");
     loadTexture(TextureList::SIDE, "./resources/side.png");
     loadTexture(TextureList::TABLE, "./resources/table.png");
-    loadTexture(TextureList::BOB, "./resources/bob.png");
+    loadTexture(TextureList::BOB, "./resources/BobSpriteSheet.png");
+    loadTexture(TextureList::ZOMBIE, "./resources/ZombieSpriteSheet.png");
     loadTexture(TextureList::WALL, "./resources/wall.png");
     loadTexture(TextureList::PIECE_OF_CORNER, "./resources/piece_of_corner.png");
     loadTexture(TextureList::PARALAX, "./resources/back.png");
@@ -41,19 +41,30 @@ namespace disp
     return (window.isOpen());
   }
 
-  Vect<float, 2u> Display::renderSprite(sf::Texture const &texture, Vect<float, 2u> position, float rotation, Vect<float, 2u> size, Vect<int, 2u> repeat) noexcept
+  Vect<float, 2u> Display::renderSprite(sf::Texture const &texture,
+					Vect<float, 2u> position,
+					float rotation, Vect<float, 2u> size,
+					Vect<int, 2u> repeat,
+					Vect<unsigned, 2u> animation) noexcept
   {
     sf::Sprite sprite;
 
     sprite.setTexture(texture);
-    sprite.setOrigin(float(texture.getSize().x) * 0.5f, float(texture.getSize().y) * 0.5f);
+    float textureWidth = float(texture.getSize().x / animation[1]);
+    float textureHeight = float(texture.getSize().y);
+    sprite.setOrigin(textureWidth * 0.5f, textureHeight * 0.5f);
+
     if (rotation)
       sprite.setRotation(rotation);
-    sprite.setScale(camera.zoom[0] * float(window.getSize().x) / float(texture.getSize().x) * size[0],
-		    camera.zoom[1] * float(window.getSize().y) / float(texture.getSize().y) * size[1]);
-    sprite.setTextureRect({0, 0, int(texture.getSize().x) * repeat[0], int(texture.getSize().y) * repeat[1]});
+    sprite.setScale(camera.zoom[0] * float(window.getSize().x) / textureWidth * size[0],
+		    camera.zoom[1] * float(window.getSize().y) / textureHeight * size[1]);
+    sprite.setTextureRect({0, 0, int(textureWidth) * repeat[0], int(textureHeight) * repeat[1]});
+    if (animation[1] > 1)
+      sprite.setTextureRect({int(textureWidth * float(animation[0])), 0, int(textureWidth), int(textureHeight)});
     position += Vect<float, 2u>(0.5f, -0.5f);
     position *= Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
+    position -= Vect<float, 2u>(camera.zoom[0] * float(window.getSize().x) * size[0] / 2.f,
+	camera.zoom[1] * float(window.getSize().y) * size[1] / 2.f);
     sprite.setPosition(position[0], position[1]);
     window.draw(sprite);
     return (position);
@@ -142,9 +153,21 @@ namespace disp
   {
     for (auto entity = begin ; entity != end ; ++entity) {
       Vect<unsigned, 2u> const &hps = entity->getHps();
+      unsigned animFrame = 2;
+      if (entity->getspeed()[0].getFloatValue() > 0.05f) {
+	animFrame = 3;
+	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
+	  animFrame = 3 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
+      }
+      else if (entity->getspeed()[0].getFloatValue() < -0.05f) {
+	animFrame = 0;
+	if (std::abs(entity->getspeed()[1].getFloatValue()) < 0.05f)
+	  animFrame = 0 + int(entity->getTimer().getElapsedTime().asSeconds() * 5) % 2;
+      }
       Vect<float, 2u> position = renderSprite(textures[entity->getTexture()],
 					      camera.apply(Vect<float, 2u>::fromFixedPoint(entity->getPosition())), 0.0f,
-					      {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()});
+					      {entity->getSize()[0].getFloatValue(), entity->getSize()[1].getFloatValue()},
+					      {1, 1}, {animFrame, 5});
       if (hps[1]) {
 	sf::RectangleShape hpBar({camera.zoom[0] * float(window.getSize().x) * entity->getSize()[0].getFloatValue(), 5.f});
 	sf::RectangleShape damageBar({hpBar.getSize().x * float(hps[1] - hps[0]) / float(hps[1]), hpBar.getSize().y});

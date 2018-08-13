@@ -13,6 +13,16 @@ namespace logic
   {
   }
 
+  Vect<FixedPoint<-16, int>, 2u> const& Entity::getspeed() const noexcept
+  {
+    return (speed);
+  }
+
+  sf::Clock const& Entity::getTimer() const noexcept
+  {
+    return (timer);
+  }
+
   void Entity::updatePosition(Logic &logic)
   {
     if (!speed.any())
