@@ -73,7 +73,7 @@ namespace logic
 	else if (keyIsRight([](auto key){
 	  return sf::Keyboard::isKeyPressed(key);
 	    }))
-	  getPlayer().setDir(-1);
+	  getPlayer().setDir(1);
 	else if (!getPlayer().getDir())
 	  getPlayer().setDir(getPlayer().getSpeed()[0].isPositive() - getPlayer().getSpeed()[0].isNegative());
 	if (!state.shootCooldownLeft)
