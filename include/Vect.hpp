@@ -52,7 +52,7 @@ public:
 
   template<class... U, typename std::enable_if<sizeof...(U) == dim>::type * = nullptr>
   constexpr Vect(U &&... ts)
-  : data{std::forward<U>(ts)...}
+  : data{ static_cast<T>(std::forward<U>(ts))...}
   {}
 
   constexpr T *begin()

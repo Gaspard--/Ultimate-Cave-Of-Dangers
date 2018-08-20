@@ -28,8 +28,8 @@ class FixedPoint
 public:
   StoreType value;
 
-  static constexpr const FixedPoint One{logicalLShift<-exponent>(1u)};
-  static constexpr const FixedPoint Zero{0};
+  static const inline FixedPoint One{ static_cast<StoreType>(logicalLShift<-exponent>(1u)) };
+  static const inline FixedPoint Zero{0};
 
   constexpr FixedPoint() noexcept
   : value(0)

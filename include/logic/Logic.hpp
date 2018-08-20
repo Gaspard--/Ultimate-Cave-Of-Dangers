@@ -25,7 +25,7 @@ namespace logic
   {
   };
 
-  static constexpr FixedPoint<-8> WaterDropSize{FixedPoint<-8>::One};
+  static FixedPoint<-8> WaterDropSize{FixedPoint<-8>::One};
   static constexpr FixedPoint<-16> SpawnPosX{60000_FP};
 
   class Logic

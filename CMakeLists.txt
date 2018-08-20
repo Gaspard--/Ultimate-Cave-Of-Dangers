@@ -48,6 +48,7 @@ if (WIN32)
                         C:/SFML-2.4.2/lib/sfml-graphics.lib
                         C:/SFML-2.4.2/lib/sfml-system.lib
                         C:/SFML-2.4.2/lib/sfml-window.lib
+			opengl32.lib
   )
 else()
   target_link_libraries(${PROJECT_NAME}
@@ -60,6 +61,5 @@ endif(WIN32)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} dl)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
