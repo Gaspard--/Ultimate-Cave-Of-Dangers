@@ -21,7 +21,7 @@ void CaveChunk::init(CaveChunk const &previous, logic::Logic &logic) noexcept
 {
   auto nextRandomNumber([]() -> unsigned int
 			{
-			  return random();
+			  return std::rand();
 			});
   for (auto &line : tiles)
     for (auto &tile : line)

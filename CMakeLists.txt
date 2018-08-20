@@ -34,6 +34,7 @@ add_executable(
 if (WIN32)
   include_directories (
     "C:/SFML-2.4.2/include"
+    "C:/include"
   )
 endif(WIN32)
 
@@ -43,10 +44,10 @@ include_directories(
 
 if (WIN32)
   target_link_libraries(${PROJECT_NAME}
-                        C:/SFML-2.4.2/build/lib/Release/sfml-audio.lib
-                        C:/SFML-2.4.2/build/lib/Release/sfml-graphics.lib
-                        C:/SFML-2.4.2/build/lib/Release/sfml-system.lib
-                        C:/SFML-2.4.2/build/lib/Release/sfml-window.lib
+                        C:/SFML-2.4.2/lib/sfml-audio.lib
+                        C:/SFML-2.4.2/lib/sfml-graphics.lib
+                        C:/SFML-2.4.2/lib/sfml-system.lib
+                        C:/SFML-2.4.2/lib/sfml-window.lib
   )
 else()
   target_link_libraries(${PROJECT_NAME}

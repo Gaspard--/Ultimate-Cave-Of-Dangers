@@ -255,7 +255,7 @@ namespace disp
   {
     Vect<float, 2u> waterPos = camera.apply(Vect<float, 2u>(0.f, waterLevel.getFloatValue()));
     sf::Texture texture = textures[TextureList::WAVE];
-    sf::RectangleShape water({window.getSize().x, window.getSize().y});
+    sf::RectangleShape water({float(window.getSize().x), float(window.getSize().y)});
     water.setFillColor(sf::Color(0x06207796));
     waterPos = (waterPos - 0.5f) * Vect<float, 2u>(float(window.getSize().x), -float(window.getSize().y));
     if (waterPos[1] < 0.0f)

@@ -300,7 +300,7 @@ namespace logic
   void Logic::spawnTable(Vect<unsigned int, 2u> floorPosition)
   {
     disp::TextureList texture;
-    unsigned rand = random();
+    unsigned rand = std::rand();
     texture = disp::TextureList::TABLE;
     if (rand % 3 == 1)
       texture = disp::TextureList::BARREL;

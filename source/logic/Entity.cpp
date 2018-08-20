@@ -85,7 +85,7 @@ namespace logic
 		    goto outX;
 		  }
 	      }
-	    position[0] += FixedPoint<-8>{speed[0].isPositive() * 2 - 1};
+	    position[0] += FixedPoint<-8>{static_cast<unsigned int>(speed[0].isPositive() * 2 - 1)};
 	  outX:
 	    ;
 	  }
@@ -107,7 +107,7 @@ namespace logic
 		    goto outY;
 		  }
 	      }
-	    position[1] += FixedPoint<-8>{speed[1].isPositive() * 2 - 1};
+	    position[1] += FixedPoint<-8>{static_cast<unsigned int>(speed[1].isPositive() * 2 - 1)};
 	  outY:
 	    ;
 	  }
