@@ -13,7 +13,7 @@
 
 *Windows*
 
-Currently, we haven't made a release for Windows, but maybe in the next few days. If you have the SFML on your PC, you can try to compile it yourself.
+Download the ZIP linked on [our itch.io page](https://matoux42.itch.io/ultimate-cave-of-dangers). Unzip it and launch *Ultimate-Cave-Of-Dangers.exe*. Enjoy !
 
 ## Story
 
